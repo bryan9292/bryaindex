@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="format-detection" content="telephone=no">
-<title>Jobsite Website</title>
+<title>Status Buttons</title>
 
 <style>
 *{
@@ -13,23 +13,23 @@
 html,body{
   margin:0;
   padding:0;
-  background:#000;
+  width:360px;
+  height:122px;
+  background:transparent;
   color:#f6f6f6;
   font-family:system-ui,sans-serif;
   overflow:visible;
 }
 
-/* ===== STATUS BUTTON OBJECT ===== */
 .status-object{
   position:absolute;
   left:0;
   top:0;
   width:360px;
-  height:128px;
+  height:122px;
   background:transparent;
 }
 
-/* ===== VERSION ===== */
 .version-tag{
   position:absolute;
   left:0;
@@ -45,7 +45,6 @@ html,body{
   text-shadow:0 0 8px rgba(255,255,255,.18);
 }
 
-/* ===== GOLD BOX ===== */
 .gold-box{
   position:absolute;
   left:0;
@@ -61,7 +60,6 @@ html,body{
     inset 0 0 18px rgba(212,175,55,.08);
 }
 
-/* ===== BUTTON ROW ===== */
 .flow-wrap{
   position:absolute;
   left:10px;
@@ -136,20 +134,12 @@ html,body{
 .flow-square.scan-lit#brbBtn{
   box-shadow:0 0 16px rgba(170,80,255,.38);
 }
-
-/* ===== PRICE PANEL HIDDEN ===== */
-.price-section{
-  display:none;
-}
 </style>
 </head>
 
 <body>
-
 <div class="status-object">
-
-  <div class="version-tag">v4</div>
-
+  <div class="version-tag">v6</div>
   <div class="gold-box">
     <div class="flow-wrap">
       <button class="flow-square faded" id="inBtn">IN</button>
@@ -158,10 +148,7 @@ html,body{
       <button class="flow-square faded" id="brbBtn">BRB</button>
     </div>
   </div>
-
 </div>
-
-<div class="price-section" id="priceSection"></div>
 
 <script>
 const flowButtons=[...document.querySelectorAll('.flow-square')];
@@ -220,6 +207,5 @@ function startupScan(){
 
 startupScan();
 </script>
-
 </body>
 </html>
