@@ -119,6 +119,51 @@ html,body{
   transform-origin:top left;
 }
 
+.cameras-pop{
+  position:absolute;
+  left:40px;
+  top:330px;
+  width:520px;
+  height:420px;
+  display:none;
+  z-index:75;
+  border:1px solid rgba(255,255,255,.42);
+  background:#050505;
+  box-shadow:
+    0 24px 65px rgba(0,0,0,.72),
+    0 0 32px rgba(255,255,255,.12);
+}
+
+body.cameras-open .cameras-pop{
+  display:block;
+}
+
+.cameras-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:#050505;
+  display:block;
+}
+
+.cameras-close{
+  position:absolute;
+  right:-9px;
+  top:-9px;
+  width:24px;
+  height:24px;
+  z-index:2;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:50%;
+  background:#070707;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 0 12px rgba(0,0,0,.8);
+}
+
 .utility-button{
   position:fixed;
   left:18px;
@@ -299,6 +344,11 @@ body.show-grid .grid-overlay{
     <iframe class="department-dashboard-sticker cache-frame" data-src="buttons/departmentdashboard.html" title="Department Dashboard"></iframe>
     <iframe class="nail-frame-sticker cache-frame" data-src="frames/nailframe.html" title="Nail Frame"></iframe>
     <iframe class="family-friends-sticker cache-frame" data-src="frames/familyfriends.html" title="Family Friends Frames"></iframe>
+
+    <div class="cameras-pop" id="camerasPop">
+      <button class="cameras-close" type="button" onclick="closeCameras()">×</button>
+      <iframe class="cameras-frame" id="camerasFrame" data-src="cameras.html" title="Cameras"></iframe>
+    </div>
   </div>
 </div>
 
@@ -307,16 +357,42 @@ const cacheVersion=Date.now()+'-'+Math.random().toString(36).slice(2);
 let activeDrag=null;
 let activePinch=null;
 
+function cacheUrl(base){
+  const joiner=base.includes('?') ? '&' : '?';
+  return base+joiner+'v='+cacheVersion;
+}
+
 document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
   const base=frame.dataset.src || frame.getAttribute('src');
   if(!base){
     return;
   }
 
-  const joiner=base.includes('?') ? '&' : '?';
-  frame.src=base+joiner+'v='+cacheVersion;
+  frame.src=cacheUrl(base);
   frame.dataset.scale=frame.dataset.scale || '1';
   frame.style.transformOrigin='top left';
+});
+
+function loadCameras(){
+  const frame=document.getElementById('camerasFrame');
+  if(frame && !frame.src){
+    frame.src=cacheUrl(frame.dataset.src);
+  }
+}
+
+function openCameras(){
+  loadCameras();
+  document.body.classList.add('cameras-open');
+}
+
+function closeCameras(){
+  document.body.classList.remove('cameras-open');
+}
+
+window.addEventListener('message',event=>{
+  if(event.data==='open-cameras'){
+    openCameras();
+  }
 });
 
 function clamp(value,min,max){
