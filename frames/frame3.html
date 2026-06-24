@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Frame 3</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:360px;
+  height:220px;
+  background:transparent;
+  overflow:visible;
+}
+
+body{
+  display:grid;
+  place-items:center;
+  font-family:Arial,sans-serif;
+}
+
+.triptych{
+  position:relative;
+  width:320px;
+  height:165px;
+  display:grid;
+  grid-template-columns:100px 100px 100px;
+  gap:10px;
+  align-items:center;
+  perspective:950px;
+}
+
+.hinge-back{
+  position:absolute;
+  left:28px;
+  right:28px;
+  top:50%;
+  height:4px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  z-index:1;
+  pointer-events:none;
+  opacity:.88;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(188,196,204,.34) 10%,
+      rgba(236,241,245,.90) 50%,
+      rgba(188,196,204,.34) 90%,
+      rgba(255,255,255,0) 100%);
+  box-shadow:
+    0 0 4px rgba(225,232,238,.08);
+}
+
+.panel{
+  position:relative;
+  height:150px;
+  background:
+    linear-gradient(135deg,
+      #d8dde1 0%,
+      #959da4 16%,
+      #f1f4f7 34%,
+      #80888f 52%,
+      #c9cfd4 70%,
+      #a0a8ae 84%,
+      #6c7278 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.52),
+    inset 0 -2px 5px rgba(0,0,0,.22),
+    0 10px 18px rgba(0,0,0,.40);
+  overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:none;
+  user-select:none;
+}
+
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:14px;
+  border:3px solid rgba(74,78,83,.76);
+  background:
+    linear-gradient(180deg,#090b0f,#020304);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.05),
+    inset 0 0 14px rgba(255,255,255,.03);
+  pointer-events:none;
+}
+
+.panel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(165deg,
+      rgba(255,255,255,.22),
+      transparent 28%,
+      transparent 68%,
+      rgba(255,255,255,.06));
+  opacity:.62;
+  pointer-events:none;
+}
+
+.panel.left,
+.panel.right{
+  cursor:grab;
+}
+
+.panel.left:active,
+.panel.right:active{
+  cursor:grabbing;
+  filter:brightness(1.06);
+}
+
+.panel.left{
+  transform-origin:right center;
+  z-index:2;
+}
+
+.panel.middle{
+  z-index:4;
+}
+
+.panel.right{
+  transform-origin:left center;
+  z-index:2;
+}
+
+.hint{
+  position:absolute;
+  left:50%;
+  bottom:-18px;
+  transform:translateX(-50%);
+  color:rgba(255,255,255,.34);
+  font-size:.55rem;
+  font-weight:900;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+</style>
+</head>
+
+<body>
+
+  <div class="triptych">
+
+    <div class="hinge-back"></div>
+
+    <div class="panel left" id="leftPanel"></div>
+    <div class="panel middle"></div>
+    <div class="panel right" id="rightPanel"></div>
+
+    <div class="hint">drag ends</div>
+  </div>
+
+<script>
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
+
+function makeDraggablePanel(panelId,side){
+  const panel = document.getElementById(panelId);
+
+  let amount = 0;
+  let startX = 0;
+  let startAmount = 0;
+  let dragging = false;
+
+  function render(){
+    const angle = amount * 42;
+    const move = amount * 8;
+
+    if(side === "left"){
+      panel.style.transform =
+        `translateX(${move}px) rotateY(${angle}deg)`;
+      panel.style.boxShadow =
+        `inset 0 1px 0 rgba(255,255,255,.52),
+         inset 0 -2px 5px rgba(0,0,0,.22),
+         ${-4 - amount * 8}px 10px 18px rgba(0,0,0,.55)`;
+    }
+
+    if(side === "right"){
+      panel.style.transform =
+        `translateX(${-move}px) rotateY(${-angle}deg)`;
+      panel.style.boxShadow =
+        `inset 0 1px 0 rgba(255,255,255,.52),
+         inset 0 -2px 5px rgba(0,0,0,.22),
+         ${4 + amount * 8}px 10px 18px rgba(0,0,0,.55)`;
+    }
+  }
+
+  panel.addEventListener("pointerdown",event=>{
+    dragging = true;
+    startX = event.clientX;
+    startAmount = amount;
+    panel.setPointerCapture(event.pointerId);
+  });
+
+  panel.addEventListener("pointermove",event=>{
+    if(!dragging){
+      return;
+    }
+
+    const dx = event.clientX - startX;
+
+    if(side === "left"){
+      amount = clamp(startAmount + dx / 70,0,1);
+    }
+
+    if(side === "right"){
+      amount = clamp(startAmount - dx / 70,0,1);
+    }
+
+    render();
+  });
+
+  function stopDrag(event){
+    dragging = false;
+
+    try{
+      panel.releasePointerCapture(event.pointerId);
+    }catch(error){}
+  }
+
+  panel.addEventListener("pointerup",stopDrag);
+  panel.addEventListener("pointercancel",stopDrag);
+
+  render();
+}
+
+makeDraggablePanel("leftPanel","left");
+makeDraggablePanel("rightPanel","right");
+</script>
+
+</body>
+</html>
