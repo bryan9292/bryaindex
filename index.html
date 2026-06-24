@@ -80,28 +80,45 @@ body.show-iframes iframe.cache-frame{
   box-shadow:
     0 0 0 1px rgba(0,0,0,.75),
     0 0 18px rgba(255,255,255,.55);
+  pointer-events:none;
 }
 
 .iframe-debug-label{
   position:absolute;
   display:none;
-  z-index:80;
-  padding:3px 6px;
+  z-index:86;
+  padding:4px 6px;
   border:1px solid rgba(255,255,255,.8);
   border-radius:6px;
-  background:rgba(0,0,0,.82);
+  background:rgba(0,0,0,.86);
   color:#fff;
   font-size:10px;
   font-weight:900;
-  letter-spacing:.08em;
-  line-height:1;
+  letter-spacing:.06em;
+  line-height:1.15;
   pointer-events:none;
   white-space:nowrap;
   text-shadow:0 0 6px rgba(255,255,255,.35);
 }
 
-body.show-iframes .iframe-debug-label{
+.iframe-drag-box{
+  position:absolute;
+  display:none;
+  z-index:85;
+  border:1px dashed rgba(255,255,255,.75);
+  background:rgba(255,255,255,.04);
+  cursor:move;
+  touch-action:none;
+}
+
+body.show-iframes .iframe-debug-label,
+body.show-iframes .iframe-drag-box{
   display:block;
+}
+
+body.dragging-iframe{
+  cursor:move;
+  user-select:none;
 }
 
 .board-size-label{
@@ -193,6 +210,7 @@ body.show-grid .grid-overlay{
 
 <script>
 const cacheVersion=Date.now()+'-'+Math.random().toString(36).slice(2);
+let activeDrag=null;
 
 document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
   const base=frame.dataset.src || frame.getAttribute('src');
@@ -204,31 +222,93 @@ document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
   frame.src=base+joiner+'v='+cacheVersion;
 });
 
-function clearIframeLabels(){
-  document.querySelectorAll('.iframe-debug-label').forEach(label=>label.remove());
+function iframeText(frame){
+  const x=Math.round(frame.offsetLeft);
+  const y=Math.round(frame.offsetTop);
+  const w=Math.round(frame.offsetWidth);
+  const h=Math.round(frame.offsetHeight);
+
+  return `x ${x}  y ${y}  |  ${w} × ${h}`;
 }
 
-function makeIframeLabels(){
-  clearIframeLabels();
+function clearIframeDebug(){
+  document.querySelectorAll('.iframe-debug-label,.iframe-drag-box').forEach(el=>el.remove());
+}
+
+function placeIframeDebug(frame,label,box){
+  const x=Math.round(frame.offsetLeft);
+  const y=Math.round(frame.offsetTop);
+  const w=Math.round(frame.offsetWidth);
+  const h=Math.round(frame.offsetHeight);
+
+  label.textContent=iframeText(frame);
+  label.style.left=x+'px';
+  label.style.top=(y+h+5)+'px';
+
+  box.style.left=x+'px';
+  box.style.top=y+'px';
+  box.style.width=w+'px';
+  box.style.height=h+'px';
+}
+
+function makeIframeDebug(){
+  clearIframeDebug();
 
   document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
     const label=document.createElement('div');
-    const w=Math.round(frame.offsetWidth);
-    const h=Math.round(frame.offsetHeight);
+    const box=document.createElement('div');
 
     label.className='iframe-debug-label';
-    label.textContent=`${w} × ${h}`;
+    box.className='iframe-drag-box';
 
-    const left=frame.offsetLeft;
-    const top=frame.offsetTop;
+    box.addEventListener('pointerdown',event=>{
+      event.preventDefault();
+      box.setPointerCapture(event.pointerId);
+      document.body.classList.add('dragging-iframe');
 
-    label.style.left=left+'px';
-    label.style.top=(top-18)+'px';
+      activeDrag={
+        frame,
+        label,
+        box,
+        pointerId:event.pointerId,
+        startClientX:event.clientX,
+        startClientY:event.clientY,
+        startLeft:frame.offsetLeft,
+        startTop:frame.offsetTop
+      };
+    });
 
-    if(top<20){
-      label.style.top=(top+h+4)+'px';
+    box.addEventListener('pointermove',event=>{
+      if(!activeDrag || activeDrag.box!==box){
+        return;
+      }
+
+      const dx=event.clientX-activeDrag.startClientX;
+      const dy=event.clientY-activeDrag.startClientY;
+      const nextLeft=Math.round(activeDrag.startLeft+dx);
+      const nextTop=Math.round(activeDrag.startTop+dy);
+
+      frame.style.left=nextLeft+'px';
+      frame.style.top=nextTop+'px';
+
+      placeIframeDebug(frame,label,box);
+    });
+
+    function stopDrag(event){
+      if(activeDrag && activeDrag.box===box){
+        try{
+          box.releasePointerCapture(activeDrag.pointerId);
+        }catch(error){}
+        activeDrag=null;
+        document.body.classList.remove('dragging-iframe');
+      }
     }
 
+    box.addEventListener('pointerup',stopDrag);
+    box.addEventListener('pointercancel',stopDrag);
+
+    placeIframeDebug(frame,label,box);
+    frame.parentElement.appendChild(box);
     frame.parentElement.appendChild(label);
   });
 }
@@ -258,9 +338,9 @@ function toggleIframes(){
   document.body.classList.toggle('show-iframes');
 
   if(document.body.classList.contains('show-iframes')){
-    makeIframeLabels();
+    makeIframeDebug();
   }else{
-    clearIframeLabels();
+    clearIframeDebug();
   }
 }
 
@@ -271,7 +351,7 @@ function toggleGrid(){
 
 window.addEventListener('resize',()=>{
   if(document.body.classList.contains('show-iframes')){
-    makeIframeLabels();
+    makeIframeDebug();
   }
 });
 
