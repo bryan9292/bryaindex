@@ -238,8 +238,25 @@ document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
   frame.style.transformOrigin='top left';
 });
 
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
+
+function boardSize(frame){
+  const board=frame.closest('.board-clip');
+  return {
+    width:board.offsetWidth,
+    height:board.offsetHeight
+  };
+}
+
 function frameScale(frame){
   return Number(frame.dataset.scale || 1);
+}
+
+function maxFrameScale(frame){
+  const board=boardSize(frame);
+  return Math.min(6,board.width/frame.offsetWidth,board.height/frame.offsetHeight);
 }
 
 function frameBox(frame){
@@ -258,6 +275,26 @@ function frameBox(frame){
   };
 }
 
+function clampPosition(frame,left,top,width,height){
+  const board=boardSize(frame);
+  return {
+    left:Math.round(clamp(left,0,board.width-width)),
+    top:Math.round(clamp(top,0,board.height-height))
+  };
+}
+
+function clampFrameInside(frame){
+  const maxScale=maxFrameScale(frame);
+  if(frameScale(frame)>maxScale){
+    setFrameScale(frame,maxScale);
+  }
+
+  const box=frameBox(frame);
+  const pos=clampPosition(frame,box.x,box.y,box.width,box.height);
+  frame.style.left=pos.left+'px';
+  frame.style.top=pos.top+'px';
+}
+
 function iframeText(frame){
   const box=frameBox(frame);
   return `x ${box.x}  y ${box.y}  |  ${box.width} × ${box.height}  |  scale ${box.scale.toFixed(2)}`;
@@ -271,6 +308,7 @@ function clearIframeDebug(){
 }
 
 function placeIframeDebug(frame,label,dragBox){
+  clampFrameInside(frame);
   const box=frameBox(frame);
 
   label.textContent=iframeText(frame);
@@ -284,7 +322,7 @@ function placeIframeDebug(frame,label,dragBox){
 }
 
 function setFrameScale(frame,scale){
-  const safeScale=Math.max(.2,Math.min(6,scale));
+  const safeScale=clamp(scale,.2,maxFrameScale(frame));
   frame.dataset.scale=String(safeScale);
   frame.style.transform=`scale(${safeScale})`;
 }
@@ -347,7 +385,9 @@ function startDrag(frame,label,dragBox,pointer){
     startClientX:pointer.clientX,
     startClientY:pointer.clientY,
     startLeft:box.x,
-    startTop:box.y
+    startTop:box.y,
+    startWidth:box.width,
+    startHeight:box.height
   };
 }
 
@@ -388,16 +428,17 @@ function makeIframeDebug(){
         const currentDistance=distance(points[0],points[1]);
         const currentMid=midpoint(points[0],points[1]);
         const scaleChange=currentDistance/activePinch.startDistance;
-        const nextScale=Math.max(.2,Math.min(6,activePinch.startScale*scaleChange));
+        const nextScale=clamp(activePinch.startScale*scaleChange,.2,maxFrameScale(frame));
         const nextWidth=Math.round(frame.offsetWidth*nextScale);
         const nextHeight=Math.round(frame.offsetHeight*nextScale);
         const midDx=currentMid.x-activePinch.startMidX;
         const midDy=currentMid.y-activePinch.startMidY;
-        const nextLeft=Math.round(activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2);
-        const nextTop=Math.round(activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2);
+        const unclampedLeft=activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2;
+        const unclampedTop=activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2;
+        const clamped=clampPosition(frame,unclampedLeft,unclampedTop,nextWidth,nextHeight);
 
-        frame.style.left=nextLeft+'px';
-        frame.style.top=nextTop+'px';
+        frame.style.left=clamped.left+'px';
+        frame.style.top=clamped.top+'px';
         setFrameScale(frame,nextScale);
 
         placeIframeDebug(frame,label,dragBox);
@@ -407,11 +448,12 @@ function makeIframeDebug(){
       if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){
         const dx=event.clientX-activeDrag.startClientX;
         const dy=event.clientY-activeDrag.startClientY;
-        const nextLeft=Math.round(activeDrag.startLeft+dx);
-        const nextTop=Math.round(activeDrag.startTop+dy);
+        const unclampedLeft=activeDrag.startLeft+dx;
+        const unclampedTop=activeDrag.startTop+dy;
+        const clamped=clampPosition(frame,unclampedLeft,unclampedTop,activeDrag.startWidth,activeDrag.startHeight);
 
-        frame.style.left=nextLeft+'px';
-        frame.style.top=nextTop+'px';
+        frame.style.left=clamped.left+'px';
+        frame.style.top=clamped.top+'px';
 
         placeIframeDebug(frame,label,dragBox);
       }
