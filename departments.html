@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>Departments</title>
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  width:260px;
+  height:360px;
+  background:transparent;
+  overflow:visible;
+}
+
+body{
+  position:relative;
+  font-family:system-ui,sans-serif;
+}
+
+#dept-grid{
+  position:absolute;
+  left:10px;
+  top:10px;
+  width:240px;
+  height:340px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:8px;
+}
+
+.dept-card{
+  min-height:0;
+  background:#181818;
+  border:2px solid #00ff88;
+  border-radius:14px;
+  box-shadow:0 0 12px #00ff88aa;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:#f4f4f4;
+  font-size:9px;
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  padding:4px;
+  text-shadow:0 1px 0 #000;
+}
+
+.dept-card.state-warn{
+  border-color:#ffe066;
+  box-shadow:0 0 12px #ffe066cc;
+}
+
+.dept-card.state-bad{
+  border-color:#ff4455;
+  box-shadow:0 0 12px #ff4455cc;
+}
+</style>
+</head>
+
+<body>
+<section id="dept-grid"></section>
+
+<script>
+const departments=[
+  {roi:+640,label:'Finances<br>& Payroll'},
+  {roi:+180,label:'Storage<br>& Stock'},
+  {roi:-220,label:'Research<br>& Testing'},
+  {roi:+90,label:'Feedback<br>& Support'},
+  {roi:-40,label:'Marketing<br>& Product'},
+  {roi:+15,label:'Onboard<br>& Career'},
+  {roi:+75,label:'Policies<br>& Legal'},
+  {roi:+35,label:'Training<br>& Safety'}
+];
+
+function stateFromROI(v){
+  return v>0 ? 'state-good' : v>-100 ? 'state-warn' : 'state-bad';
+}
+
+const grid=document.getElementById('dept-grid');
+
+departments.forEach(d=>{
+  const card=document.createElement('article');
+  card.className=`dept-card ${stateFromROI(d.roi)}`;
+  card.innerHTML=d.label;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
