@@ -13,8 +13,8 @@
 html,body{
   margin:0;
   padding:0;
-  width:360px;
-  height:122px;
+  width:384px;
+  height:146px;
   background:transparent;
   color:#f6f6f6;
   font-family:system-ui,sans-serif;
@@ -25,14 +25,14 @@ html,body{
   position:absolute;
   left:0;
   top:0;
-  width:360px;
-  height:122px;
+  width:384px;
+  height:146px;
   background:transparent;
 }
 
 .version-tag{
   position:absolute;
-  left:0;
+  left:12px;
   top:0;
   width:360px;
   height:18px;
@@ -47,17 +47,38 @@ html,body{
 
 .gold-box{
   position:absolute;
-  left:0;
-  top:26px;
+  left:12px;
+  top:32px;
   width:360px;
   height:96px;
-  border-radius:22px;
+  border-radius:24px;
   background:#0b0b0b;
   border:1px solid #d4af37;
   box-shadow:
-    0 0 12px rgba(212,175,55,.7),
-    0 0 32px rgba(212,175,55,.35),
-    inset 0 0 18px rgba(212,175,55,.08);
+    0 0 9px rgba(212,175,55,.78),
+    inset 0 0 18px rgba(212,175,55,.10),
+    inset 0 1px 0 rgba(255,240,185,.18);
+}
+
+.gold-box::before{
+  content:"";
+  position:absolute;
+  inset:-9px;
+  border-radius:34px;
+  background:rgba(212,175,55,.22);
+  filter:blur(10px);
+  z-index:-1;
+}
+
+.gold-box::after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:22px;
+  pointer-events:none;
+  box-shadow:
+    inset 0 0 10px rgba(255,230,150,.08),
+    inset 0 -9px 16px rgba(0,0,0,.28);
 }
 
 .flow-wrap{
@@ -139,7 +160,7 @@ html,body{
 
 <body>
 <div class="status-object">
-  <div class="version-tag">v8</div>
+  <div class="version-tag">v9</div>
   <div class="gold-box">
     <div class="flow-wrap">
       <button class="flow-square faded" id="inBtn">IN</button>
