@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Static 350x600 Box</title>
+<title>Static Centered 600x900 Box</title>
 
 <style>
 *{
@@ -18,12 +18,12 @@ html,body{
 }
 
 .bryaindex-box{
-  position:absolute;
-  left:50%;
-  top:0;
-  margin-left:-175px;
-  width:350px;
-  height:600px;
+  position:fixed;
+  left:50vw;
+  top:50vh;
+  transform:translate(-50%,-50%);
+  width:600px;
+  height:900px;
   border:1px solid #fff;
   background:#070707;
 }
