@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Failsafe Briefcase</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:420px;
+  height:193px;
+  background:transparent;
+  overflow:visible;
+}
+
+body{
+  display:grid;
+  place-items:center;
+  font-family:Georgia,serif;
+}
+
+.briefcase-wrap{
+  width:420px;
+  display:grid;
+  place-items:center;
+}
+
+.handle{
+  width:150px;
+  height:58px;
+  border:12px solid #5a321b;
+  border-bottom:0;
+  border-radius:28px 28px 0 0;
+  background:transparent;
+  position:relative;
+  z-index:2;
+  margin-bottom:-2px;
+  box-shadow:
+    inset 0 0 0 2px #8a5733,
+    0 -2px 0 #2d160c;
+}
+
+.handle-button{
+  position:absolute;
+  left:50%;
+  top:7px;
+  transform:translateX(-50%);
+  width:92px;
+  height:33px;
+  border:0;
+  background:transparent;
+  color:transparent;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:1.28rem;
+  font-weight:1000;
+  letter-spacing:.14em;
+  line-height:1;
+  cursor:default;
+  pointer-events:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:
+    color .16s ease,
+    text-shadow .16s ease,
+    opacity .16s ease;
+}
+
+.briefcase-wrap.armed .handle-button{
+  color:#fff;
+  text-shadow:
+    0 2px 0 #1d0d06,
+    0 0 10px rgba(255,255,255,.35);
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+.briefcase-wrap.armed .handle-button:active{
+  opacity:.82;
+}
+
+.briefcase{
+  position:relative;
+  width:100%;
+  height:135px;
+  border-radius:18px;
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,.05),
+      transparent 18%,
+      transparent 82%,
+      rgba(0,0,0,.18)
+    ),
+    linear-gradient(#7a4528,#5c2f18);
+  border:5px solid #2d160c;
+  box-shadow:
+    0 18px 30px rgba(0,0,0,.45),
+    inset 0 2px 0 rgba(255,255,255,.15),
+    inset 0 -8px 18px rgba(0,0,0,.18);
+  overflow:hidden;
+}
+
+.stitch{
+  position:absolute;
+  inset:17px;
+  border:2px dashed rgba(255,215,150,.38);
+  border-radius:12px;
+  z-index:1;
+  pointer-events:none;
+}
+
+.title{
+  position:absolute;
+  top:50%;
+  left:18px;
+  right:18px;
+  transform:translateY(-50%);
+  z-index:3;
+  text-align:center;
+  color:#190b04;
+  font-family:Georgia,serif;
+  font-size:1.55rem;
+  font-weight:1000;
+  letter-spacing:.055em;
+  white-space:nowrap;
+  text-shadow:
+    0 1px 0 rgba(255,220,150,.28),
+    0 2px 0 rgba(120,65,30,.18),
+    0 -1px 0 rgba(0,0,0,.48);
+  pointer-events:none;
+}
+
+.corner{
+  position:absolute;
+  width:42px;
+  height:42px;
+  border:4px solid #2d160c;
+  background:#9b6d35;
+  z-index:7;
+  padding:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:
+    background .14s ease,
+    box-shadow .14s ease,
+    filter .14s ease;
+}
+
+.corner::after{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#3a1c10;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2);
+  transition:
+    background .14s ease,
+    box-shadow .14s ease;
+}
+
+.corner.switch{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -2px 0 rgba(0,0,0,.12);
+}
+
+.corner.switch:active{
+  filter:brightness(.96);
+}
+
+.corner.switch.active{
+  background:#8c5b2d;
+  box-shadow:
+    inset 0 4px 8px rgba(0,0,0,.30),
+    inset 0 -1px 0 rgba(255,255,255,.08),
+    0 0 10px rgba(0,0,0,.08);
+}
+
+.corner.switch.active::after{
+  background:#2b1208;
+  box-shadow:
+    inset 0 2px 3px rgba(0,0,0,.55);
+}
+
+.tl{
+  top:-4px;
+  left:-4px;
+  border-radius:14px 0 12px 0;
+}
+
+.tr{
+  top:-4px;
+  right:-4px;
+  border-radius:0 14px 0 12px;
+}
+
+.bl{
+  bottom:-4px;
+  left:-4px;
+  border-radius:0 12px 0 14px;
+}
+
+.br{
+  bottom:-4px;
+  right:-4px;
+  border-radius:12px 0 14px 0;
+}
+</style>
+</head>
+
+<body>
+
+  <div class="briefcase-wrap" id="briefcaseWrap">
+    <div class="handle">
+      <button class="handle-button" id="offButton">OFF</button>
+    </div>
+
+    <div class="briefcase">
+      <div class="stitch"></div>
+
+      <button class="corner switch tl" id="tlCorner" type="button" aria-label="top left safety switch"></button>
+      <button class="corner switch tr" id="trCorner" type="button" aria-label="top right safety switch"></button>
+      <button class="corner switch bl" id="blCorner" type="button" aria-label="bottom left safety switch"></button>
+      <button class="corner switch br" id="brCorner" type="button" aria-label="bottom right safety switch"></button>
+
+      <div class="title">FAILSAFE BRIEFCASE</div>
+    </div>
+  </div>
+
+<script>
+const wrap = document.getElementById("briefcaseWrap");
+const offButton = document.getElementById("offButton");
+
+const switches = {
+  tl: document.getElementById("tlCorner"),
+  tr: document.getElementById("trCorner"),
+  bl: document.getElementById("blCorner"),
+  br: document.getElementById("brCorner")
+};
+
+const state = {
+  tl: false,
+  tr: false,
+  bl: false,
+  br: false
+};
+
+function updateBriefcase(){
+  Object.entries(switches).forEach(([key, button]) => {
+    button.classList.toggle("active", state[key]);
+  });
+
+  const allOn = Object.values(state).every(Boolean);
+  wrap.classList.toggle("armed", allOn);
+}
+
+Object.entries(switches).forEach(([key, button]) => {
+  button.addEventListener("click", () => {
+    state[key] = !state[key];
+    updateBriefcase();
+  });
+});
+
+offButton.addEventListener("click", () => {
+  Object.keys(state).forEach(key => {
+    state[key] = false;
+  });
+  updateBriefcase();
+});
+</script>
+
+</body>
+</html>
