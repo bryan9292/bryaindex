@@ -79,10 +79,10 @@ let activePinch=null;
 function cacheUrl(base){const joiner=base.includes('?') ? '&' : '?';return base+joiner+'v='+cacheVersion}
 document.querySelectorAll('iframe.cache-frame').forEach(frame=>{const base=frame.dataset.src || frame.getAttribute('src');if(!base){return}frame.src=cacheUrl(base);frame.dataset.scale=frame.dataset.scale || '1';frame.style.transformOrigin='top left'});
 function loadCameras(){const frame=document.getElementById('camerasFrame');if(frame && !frame.src){frame.src=cacheUrl(frame.dataset.src)}}
-function openCameras(){loadCameras();document.body.classList.add('cameras-open')}
+function openCameras(){if(document.body.classList.contains('cameras-open')){closeCameras();return}loadCameras();document.body.classList.add('cameras-open')}
 function closeCameras(){document.body.classList.remove('cameras-open')}
 function loadDepartments(){const frame=document.getElementById('departmentsFrame');if(frame && !frame.src){frame.src=cacheUrl(frame.dataset.src)}}
-function openDepartments(){loadDepartments();document.body.classList.add('departments-open')}
+function openDepartments(){if(document.body.classList.contains('departments-open')){closeDepartments();return}loadDepartments();document.body.classList.add('departments-open')}
 function closeDepartments(){document.body.classList.remove('departments-open')}
 window.addEventListener('message',event=>{if(event.data==='open-cameras'){openCameras()}if(event.data==='open-departments'){openDepartments()}});
 function clamp(value,min,max){return Math.max(min,Math.min(max,value))}
