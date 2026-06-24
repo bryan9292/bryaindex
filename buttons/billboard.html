@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>Intelligence Billboard Nameplate</title>
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:230px;
+  height:62px;
+  background:transparent;
+  font-family:Georgia,"Times New Roman",serif;
+  overflow:visible;
+}
+
+body{
+  position:relative;
+}
+
+.panel{
+  position:absolute;
+  left:10px;
+  top:10px;
+  width:210px;
+  height:42px;
+  background:repeating-linear-gradient(0deg,#111 0px,#111 2px,#181818 3px,#0b0b0b 5px);
+  border:3px solid #c4aa72;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+}
+
+h1{
+  margin:0;
+  color:#d8c48a;
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+  text-shadow:1px 1px 0 #000;
+  white-space:nowrap;
+}
+</style>
+</head>
+
+<body>
+  <div class="panel" id="billboardPanel">
+    <h1>Intelligence Billboard</h1>
+  </div>
+</body>
+</html>
