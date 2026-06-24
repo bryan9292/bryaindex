@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Bryaindex</title>
+<title>Bryaindex Foundation</title>
 <style>
 *{
   box-sizing:border-box;
@@ -39,19 +39,6 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-}
-
-.status-sticker{
-  position:absolute;
-  left:0;
-  top:0;
-  width:384px;
-  height:146px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
 }
 
 .utility-button{
@@ -217,7 +204,15 @@ body.show-grid .grid-overlay{
 
   <div class="board-clip">
     <div class="grid-overlay" id="gridOverlay"></div>
-    <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
+
+    <!--
+      FUTURE IFRAMES GO HERE.
+      Example:
+      <iframe class="your-sticker cache-frame" data-src="folder/file.html" title="Your Sticker"></iframe>
+
+      Placement lives in index.html.
+      Object art lives in its own file.
+    -->
   </div>
 </div>
 
@@ -234,7 +229,7 @@ document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
 
   const joiner=base.includes('?') ? '&' : '?';
   frame.src=base+joiner+'v='+cacheVersion;
-  frame.dataset.scale='1';
+  frame.dataset.scale=frame.dataset.scale || '1';
   frame.style.transformOrigin='top left';
 });
 
