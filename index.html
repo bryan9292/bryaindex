@@ -42,6 +42,7 @@ html,body{
   background:transparent;
   display:block;
   overflow:visible;
+  transform-origin:top left;
 }
 
 .utility-button{
@@ -222,15 +223,33 @@ document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
 
   const joiner=base.includes('?') ? '&' : '?';
   frame.src=base+joiner+'v='+cacheVersion;
+  frame.dataset.scale='1';
+  frame.style.transformOrigin='top left';
 });
 
-function iframeText(frame){
-  const x=Math.round(frame.offsetLeft);
-  const y=Math.round(frame.offsetTop);
-  const w=Math.round(frame.offsetWidth);
-  const h=Math.round(frame.offsetHeight);
+function frameScale(frame){
+  return Number(frame.dataset.scale || 1);
+}
 
-  return `x ${x}  y ${y}  |  ${w} × ${h}`;
+function frameBox(frame){
+  const scale=frameScale(frame);
+  const baseWidth=frame.offsetWidth;
+  const baseHeight=frame.offsetHeight;
+
+  return {
+    x:Math.round(frame.offsetLeft),
+    y:Math.round(frame.offsetTop),
+    baseWidth,
+    baseHeight,
+    scale,
+    width:Math.round(baseWidth*scale),
+    height:Math.round(baseHeight*scale)
+  };
+}
+
+function iframeText(frame){
+  const box=frameBox(frame);
+  return `x ${box.x}  y ${box.y}  |  ${box.width} × ${box.height}  |  scale ${box.scale.toFixed(2)}`;
 }
 
 function clearIframeDebug(){
@@ -240,20 +259,23 @@ function clearIframeDebug(){
   document.body.classList.remove('dragging-iframe','resizing-iframe');
 }
 
-function placeIframeDebug(frame,label,box){
-  const x=Math.round(frame.offsetLeft);
-  const y=Math.round(frame.offsetTop);
-  const w=Math.round(frame.offsetWidth);
-  const h=Math.round(frame.offsetHeight);
+function placeIframeDebug(frame,label,dragBox){
+  const box=frameBox(frame);
 
   label.textContent=iframeText(frame);
-  label.style.left=x+'px';
-  label.style.top=(y+h+5)+'px';
+  label.style.left=box.x+'px';
+  label.style.top=(box.y+box.height+5)+'px';
 
-  box.style.left=x+'px';
-  box.style.top=y+'px';
-  box.style.width=w+'px';
-  box.style.height=h+'px';
+  dragBox.style.left=box.x+'px';
+  dragBox.style.top=box.y+'px';
+  dragBox.style.width=box.width+'px';
+  dragBox.style.height=box.height+'px';
+}
+
+function setFrameScale(frame,scale){
+  const safeScale=Math.max(.2,Math.min(6,scale));
+  frame.dataset.scale=String(safeScale);
+  frame.style.transform=`scale(${safeScale})`;
 }
 
 function distance(a,b){
@@ -267,12 +289,12 @@ function midpoint(a,b){
   };
 }
 
-function twoPointers(box){
-  return [...box._pointers.values()].slice(0,2);
+function twoPointers(dragBox){
+  return [...dragBox._pointers.values()].slice(0,2);
 }
 
-function startPinch(frame,label,box){
-  const points=twoPointers(box);
+function startPinch(frame,label,dragBox){
+  const points=twoPointers(dragBox);
   if(points.length<2){
     return;
   }
@@ -282,36 +304,39 @@ function startPinch(frame,label,box){
   document.body.classList.add('resizing-iframe');
 
   const mid=midpoint(points[0],points[1]);
+  const box=frameBox(frame);
 
   activePinch={
     frame,
     label,
-    box,
+    dragBox,
     startDistance:distance(points[0],points[1]),
     startMidX:mid.x,
     startMidY:mid.y,
-    startLeft:frame.offsetLeft,
-    startTop:frame.offsetTop,
-    startWidth:frame.offsetWidth,
-    startHeight:frame.offsetHeight,
-    ratio:frame.offsetWidth/frame.offsetHeight
+    startLeft:box.x,
+    startTop:box.y,
+    startScale:box.scale,
+    startVisualWidth:box.width,
+    startVisualHeight:box.height
   };
 }
 
-function startDrag(frame,label,box,pointer){
+function startDrag(frame,label,dragBox,pointer){
   activePinch=null;
   document.body.classList.remove('resizing-iframe');
   document.body.classList.add('dragging-iframe');
 
+  const box=frameBox(frame);
+
   activeDrag={
     frame,
     label,
-    box,
+    dragBox,
     pointerId:pointer.pointerId,
     startClientX:pointer.clientX,
     startClientY:pointer.clientY,
-    startLeft:frame.offsetLeft,
-    startTop:frame.offsetTop
+    startLeft:box.x,
+    startTop:box.y
   };
 }
 
@@ -320,55 +345,55 @@ function makeIframeDebug(){
 
   document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
     const label=document.createElement('div');
-    const box=document.createElement('div');
+    const dragBox=document.createElement('div');
 
     label.className='iframe-debug-label';
-    box.className='iframe-drag-box';
-    box._pointers=new Map();
+    dragBox.className='iframe-drag-box';
+    dragBox._pointers=new Map();
 
-    box.addEventListener('pointerdown',event=>{
+    dragBox.addEventListener('pointerdown',event=>{
       event.preventDefault();
-      box.setPointerCapture(event.pointerId);
-      box._pointers.set(event.pointerId,event);
+      dragBox.setPointerCapture(event.pointerId);
+      dragBox._pointers.set(event.pointerId,event);
 
-      if(box._pointers.size===1){
-        startDrag(frame,label,box,event);
+      if(dragBox._pointers.size===1){
+        startDrag(frame,label,dragBox,event);
       }
 
-      if(box._pointers.size>=2){
-        startPinch(frame,label,box);
+      if(dragBox._pointers.size>=2){
+        startPinch(frame,label,dragBox);
       }
     });
 
-    box.addEventListener('pointermove',event=>{
-      if(!box._pointers.has(event.pointerId)){
+    dragBox.addEventListener('pointermove',event=>{
+      if(!dragBox._pointers.has(event.pointerId)){
         return;
       }
 
-      box._pointers.set(event.pointerId,event);
+      dragBox._pointers.set(event.pointerId,event);
 
-      if(activePinch && activePinch.box===box && box._pointers.size>=2){
-        const points=twoPointers(box);
+      if(activePinch && activePinch.dragBox===dragBox && dragBox._pointers.size>=2){
+        const points=twoPointers(dragBox);
         const currentDistance=distance(points[0],points[1]);
         const currentMid=midpoint(points[0],points[1]);
-        const scale=currentDistance/activePinch.startDistance;
-        const nextWidth=Math.max(80,Math.round(activePinch.startWidth*scale));
-        const nextHeight=Math.max(30,Math.round(nextWidth/activePinch.ratio));
+        const scaleChange=currentDistance/activePinch.startDistance;
+        const nextScale=Math.max(.2,Math.min(6,activePinch.startScale*scaleChange));
+        const nextWidth=Math.round(frame.offsetWidth*nextScale);
+        const nextHeight=Math.round(frame.offsetHeight*nextScale);
         const midDx=currentMid.x-activePinch.startMidX;
         const midDy=currentMid.y-activePinch.startMidY;
-        const nextLeft=Math.round(activePinch.startLeft+midDx-(nextWidth-activePinch.startWidth)/2);
-        const nextTop=Math.round(activePinch.startTop+midDy-(nextHeight-activePinch.startHeight)/2);
+        const nextLeft=Math.round(activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2);
+        const nextTop=Math.round(activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2);
 
         frame.style.left=nextLeft+'px';
         frame.style.top=nextTop+'px';
-        frame.style.width=nextWidth+'px';
-        frame.style.height=nextHeight+'px';
+        setFrameScale(frame,nextScale);
 
-        placeIframeDebug(frame,label,box);
+        placeIframeDebug(frame,label,dragBox);
         return;
       }
 
-      if(activeDrag && activeDrag.box===box && activeDrag.pointerId===event.pointerId){
+      if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){
         const dx=event.clientX-activeDrag.startClientX;
         const dy=event.clientY-activeDrag.startClientY;
         const nextLeft=Math.round(activeDrag.startLeft+dx);
@@ -377,28 +402,28 @@ function makeIframeDebug(){
         frame.style.left=nextLeft+'px';
         frame.style.top=nextTop+'px';
 
-        placeIframeDebug(frame,label,box);
+        placeIframeDebug(frame,label,dragBox);
       }
     });
 
     function stopPointer(event){
-      if(box._pointers.has(event.pointerId)){
-        box._pointers.delete(event.pointerId);
+      if(dragBox._pointers.has(event.pointerId)){
+        dragBox._pointers.delete(event.pointerId);
       }
 
       try{
-        box.releasePointerCapture(event.pointerId);
+        dragBox.releasePointerCapture(event.pointerId);
       }catch(error){}
 
-      if(box._pointers.size>=2){
-        startPinch(frame,label,box);
+      if(dragBox._pointers.size>=2){
+        startPinch(frame,label,dragBox);
         return;
       }
 
-      if(box._pointers.size===1){
-        const remaining=[...box._pointers.values()][0];
+      if(dragBox._pointers.size===1){
+        const remaining=[...dragBox._pointers.values()][0];
         activePinch=null;
-        startDrag(frame,label,box,remaining);
+        startDrag(frame,label,dragBox,remaining);
         return;
       }
 
@@ -407,16 +432,16 @@ function makeIframeDebug(){
       document.body.classList.remove('dragging-iframe','resizing-iframe');
     }
 
-    box.addEventListener('pointerup',stopPointer);
-    box.addEventListener('pointercancel',stopPointer);
-    box.addEventListener('lostpointercapture',event=>{
-      if(box._pointers.has(event.pointerId)){
-        box._pointers.delete(event.pointerId);
+    dragBox.addEventListener('pointerup',stopPointer);
+    dragBox.addEventListener('pointercancel',stopPointer);
+    dragBox.addEventListener('lostpointercapture',event=>{
+      if(dragBox._pointers.has(event.pointerId)){
+        dragBox._pointers.delete(event.pointerId);
       }
     });
 
-    placeIframeDebug(frame,label,box);
-    frame.parentElement.appendChild(box);
+    placeIframeDebug(frame,label,dragBox);
+    frame.parentElement.appendChild(dragBox);
     frame.parentElement.appendChild(label);
   });
 }
