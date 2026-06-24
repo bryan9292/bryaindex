@@ -44,11 +44,9 @@ html,body{
   overflow:visible;
 }
 
-.iframe-toggle{
+.utility-button{
   position:fixed;
   left:18px;
-  top:50vh;
-  transform:translateY(-50%);
   width:78px;
   height:36px;
   border:1px solid rgba(255,255,255,.55);
@@ -59,7 +57,21 @@ html,body{
   font-weight:900;
   letter-spacing:.08em;
   text-transform:uppercase;
-  z-index:50;
+  z-index:90;
+}
+
+.iframe-toggle{
+  top:calc(50vh - 22px);
+}
+
+.grid-toggle{
+  top:calc(50vh + 22px);
+}
+
+body.show-iframes .iframe-toggle,
+body.show-grid .grid-toggle{
+  background:#fff;
+  color:#000;
 }
 
 body.show-iframes iframe.cache-frame{
@@ -68,11 +80,6 @@ body.show-iframes iframe.cache-frame{
   box-shadow:
     0 0 0 1px rgba(0,0,0,.75),
     0 0 18px rgba(255,255,255,.55);
-}
-
-body.show-iframes .iframe-toggle{
-  background:#fff;
-  color:#000;
 }
 
 .iframe-debug-label{
@@ -96,13 +103,91 @@ body.show-iframes .iframe-toggle{
 body.show-iframes .iframe-debug-label{
   display:block;
 }
+
+.board-size-label{
+  position:absolute;
+  z-index:75;
+  padding:4px 7px;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:8px;
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.09em;
+  line-height:1;
+  pointer-events:none;
+  white-space:nowrap;
+  text-shadow:0 0 7px rgba(255,255,255,.35);
+}
+
+.board-width-label{
+  left:50%;
+  top:-24px;
+  transform:translateX(-50%);
+}
+
+.board-height-label{
+  right:-58px;
+  top:50%;
+  transform:translateY(-50%) rotate(90deg);
+  transform-origin:center;
+}
+
+.grid-overlay{
+  position:absolute;
+  inset:0;
+  display:none;
+  z-index:70;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px;
+}
+
+body.show-grid .grid-overlay{
+  display:block;
+}
+
+.grid-number{
+  position:absolute;
+  color:rgba(255,255,255,.88);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-shadow:
+    0 0 5px #000,
+    0 0 8px #000;
+}
+
+.grid-x{
+  top:3px;
+  transform:translateX(3px);
+}
+
+.grid-y{
+  left:3px;
+  transform:translateY(3px);
+}
 </style>
 </head>
 
 <body>
-<button class="iframe-toggle" type="button" onclick="toggleIframes()">iframe</button>
+<button class="utility-button iframe-toggle" type="button" onclick="toggleIframes()">iframe</button>
+<button class="utility-button grid-toggle" type="button" onclick="toggleGrid()">grid</button>
 
 <div class="bryaindex-box">
+  <div class="board-size-label board-width-label">600 W</div>
+  <div class="board-size-label board-height-label">900 H</div>
+  <div class="grid-overlay" id="gridOverlay"></div>
+
   <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
 </div>
 
@@ -126,7 +211,7 @@ function clearIframeLabels(){
 function makeIframeLabels(){
   clearIframeLabels();
 
-  document.querySelectorAll('iframe.cache-frame').forEach((frame,index)=>{
+  document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
     const label=document.createElement('div');
     const w=Math.round(frame.offsetWidth);
     const h=Math.round(frame.offsetHeight);
@@ -148,6 +233,27 @@ function makeIframeLabels(){
   });
 }
 
+function buildGrid(){
+  const grid=document.getElementById('gridOverlay');
+  grid.innerHTML='';
+
+  for(let x=0;x<=600;x+=100){
+    const label=document.createElement('div');
+    label.className='grid-number grid-x';
+    label.textContent=x;
+    label.style.left=x+'px';
+    grid.appendChild(label);
+  }
+
+  for(let y=0;y<=900;y+=100){
+    const label=document.createElement('div');
+    label.className='grid-number grid-y';
+    label.textContent=y;
+    label.style.top=y+'px';
+    grid.appendChild(label);
+  }
+}
+
 function toggleIframes(){
   document.body.classList.toggle('show-iframes');
 
@@ -158,11 +264,18 @@ function toggleIframes(){
   }
 }
 
+function toggleGrid(){
+  document.body.classList.toggle('show-grid');
+  buildGrid();
+}
+
 window.addEventListener('resize',()=>{
   if(document.body.classList.contains('show-iframes')){
     makeIframeLabels();
   }
 });
+
+buildGrid();
 </script>
 </body>
 </html>
