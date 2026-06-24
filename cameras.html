@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>CCCCCC Morph Camera Wall</title>
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:520px;
+  height:420px;
+  background:#050505;
+  color:#f5f5f5;
+  font-family:system-ui,sans-serif;
+  overflow:hidden;
+}
+
+body{
+  position:relative;
+}
+
+.scene{
+  position:absolute;
+  left:10px;
+  top:10px;
+  width:500px;
+  height:400px;
+  display:grid;
+  grid-template-rows:1fr 44px 52px;
+  gap:8px;
+  perspective:900px;
+}
+
+.wall{
+  width:100%;
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  gap:6px;
+  perspective:900px;
+  transition:opacity .2s ease;
+}
+
+.monitor,
+.edit-screen{
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  border:1px solid rgba(255,255,255,.24);
+  background:linear-gradient(180deg,#1a1a1a,#070707);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    0 0 24px rgba(255,255,255,.08);
+  display:grid;
+  place-items:center;
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+}
+
+.monitor::before,
+.control-panel::before,
+.finder-panel::before,
+.edit-screen::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(255,255,255,.08);
+  pointer-events:none;
+}
+
+.monitor span{
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.16em;
+  white-space:nowrap;
+}
+
+.left{
+  transform:rotateY(18deg);
+  transform-origin:right center;
+}
+
+.right{
+  transform:rotateY(-18deg);
+  transform-origin:left center;
+}
+
+.finder-panel{
+  width:100%;
+  height:44px;
+  border:1px solid rgba(255,255,255,.24);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.07),transparent 30%),
+    linear-gradient(180deg,#131313,#050505);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    inset 0 -8px 16px rgba(0,0,0,.7),
+    0 0 22px rgba(255,255,255,.07);
+  position:relative;
+  display:grid;
+  grid-template-columns:auto 1fr auto auto auto;
+  align-items:center;
+  gap:6px;
+  padding:0 8px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  overflow:hidden;
+}
+
+.day-parts{
+  display:flex;
+  gap:5px;
+  justify-content:center;
+  align-items:center;
+  min-width:0;
+}
+
+.day-parts span{
+  height:22px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  font-size:7px;
+  padding:0 5px;
+  white-space:nowrap;
+}
+
+#timeText{
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.rail-btn{
+  height:24px;
+  padding:0 7px;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(180deg,#151515,#060606);
+  color:#f5f5f5;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.12em;
+  cursor:pointer;
+  z-index:2;
+}
+
+.rail-btn.active{
+  color:#9dffb0;
+  border-color:rgba(73,255,113,.35);
+  background:linear-gradient(180deg,rgba(73,255,113,.22),rgba(73,255,113,.08));
+  box-shadow:0 0 10px rgba(73,255,113,.22);
+}
+
+.control-row{
+  width:100%;
+  height:52px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+
+.control-panel{
+  height:52px;
+  border:1px solid rgba(255,255,255,.24);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.08),transparent 30%),
+    linear-gradient(180deg,#151515,#060606);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 0 -8px 18px rgba(0,0,0,.7),
+    0 0 24px rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:8px 18px;
+  position:relative;
+}
+
+.control-btn{
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.34);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.25),
+    inset 0 -4px 8px rgba(0,0,0,.55),
+    0 0 10px currentColor;
+  cursor:pointer;
+  z-index:2;
+}
+
+.red{color:#ff3b3b;background:#ff3b3b}
+.green{color:#49ff71;background:#49ff71}
+.blue{color:#4aa3ff;background:#4aa3ff}
+.yellow{color:#ffd84a;background:#ffd84a}
+.purple{color:#b56cff;background:#b56cff}
+.white{color:#f5f5f5;background:#f5f5f5}
+
+.morph,
+.edit-screen{
+  position:fixed;
+  z-index:999;
+  margin:0;
+  transform:none!important;
+  cursor:pointer;
+  transition:
+    left .55s cubic-bezier(.2,.8,.2,1),
+    top .55s cubic-bezier(.2,.8,.2,1),
+    width .55s cubic-bezier(.2,.8,.2,1),
+    height .55s cubic-bezier(.2,.8,.2,1);
+}
+
+.morph span,
+.edit-screen span{
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+</style>
+</head>
+
+<body>
+<div class="scene">
+  <div class="wall">
+    <div class="monitor left"><span>LEFT FEED</span></div>
+    <div class="monitor"><span>CCCCCC</span></div>
+    <div class="monitor right"><span>RIGHT FEED</span></div>
+
+    <div class="monitor left"><span>YARD</span></div>
+    <div class="monitor"><span>SHOP</span></div>
+    <div class="monitor right"><span>GATE</span></div>
+
+    <div class="monitor left"><span>TRUCKS</span></div>
+    <div class="monitor"><span>LOADING</span></div>
+    <div class="monitor right"><span>OFFICE</span></div>
+  </div>
+
+  <div class="finder-panel">
+    <span id="dateText">Sat - Jun 21</span>
+    <div class="day-parts">
+      <span>Morning</span>
+      <span>Afternoon</span>
+      <span>Night</span>
+    </div>
+    <span id="timeText">00:00:00</span>
+    <button class="rail-btn" id="clipBtn">CLIP</button>
+    <button class="rail-btn" id="editBtn">EDIT</button>
+  </div>
+
+  <div class="control-row">
+    <div class="control-panel">
+      <button class="control-btn red"></button>
+      <button class="control-btn green"></button>
+    </div>
+
+    <div class="control-panel">
+      <button class="control-btn blue"></button>
+      <button class="control-btn yellow"></button>
+    </div>
+
+    <div class="control-panel">
+      <button class="control-btn purple"></button>
+      <button class="control-btn white"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const wall=document.querySelector('.wall');
+const monitors=document.querySelectorAll('.monitor');
+const clipBtn=document.getElementById('clipBtn');
+const editBtn=document.getElementById('editBtn');
+const timeText=document.getElementById('timeText');
+let clipSetup=false;
+let clipActive=false;
+let clipIndex=0;
+const clipTimes=['00:00:00','00:15:00','00:30:00','01:00:00','02:00:00'];
+
+monitors.forEach(monitor=>{
+  monitor.addEventListener('click',()=>{
+    if(document.querySelector('.morph') || document.querySelector('.edit-screen')){
+      return;
+    }
+
+    const start=monitor.getBoundingClientRect();
+    const end=wall.getBoundingClientRect();
+    const clone=monitor.cloneNode(true);
+    clone.classList.add('morph');
+    document.body.appendChild(clone);
+
+    Object.assign(clone.style,{
+      left:start.left+'px',
+      top:start.top+'px',
+      width:start.width+'px',
+      height:start.height+'px'
+    });
+
+    wall.style.opacity='0';
+
+    requestAnimationFrame(()=>{
+      Object.assign(clone.style,{
+        left:end.left+'px',
+        top:end.top+'px',
+        width:end.width+'px',
+        height:end.height+'px'
+      });
+    });
+
+    clone.addEventListener('click',()=>{
+      clone.remove();
+      wall.style.opacity='1';
+    });
+  });
+});
+
+editBtn.addEventListener('click',()=>{
+  if(document.querySelector('.morph') || document.querySelector('.edit-screen')){
+    return;
+  }
+
+  const end=wall.getBoundingClientRect();
+  const editScreen=document.createElement('div');
+  editScreen.className='edit-screen';
+  editScreen.innerHTML='<span>EDIT</span>';
+  document.body.appendChild(editScreen);
+
+  Object.assign(editScreen.style,{
+    left:end.left+'px',
+    top:end.top+'px',
+    width:end.width+'px',
+    height:end.height+'px'
+  });
+
+  wall.style.opacity='0';
+  editBtn.classList.add('active');
+
+  editScreen.addEventListener('click',()=>{
+    editScreen.remove();
+    wall.style.opacity='1';
+    editBtn.classList.remove('active');
+  });
+});
+
+clipBtn.addEventListener('click',()=>{
+  if(clipActive){
+    clipActive=false;
+    clipBtn.classList.remove('active');
+    return;
+  }
+
+  if(!clipSetup){
+    clipSetup=true;
+    clipIndex=0;
+    timeText.textContent=clipTimes[clipIndex];
+    return;
+  }
+
+  clipSetup=false;
+  clipActive=true;
+  clipBtn.classList.add('active');
+});
+
+timeText.addEventListener('click',()=>{
+  if(!clipSetup){
+    return;
+  }
+
+  clipIndex=(clipIndex+1)%clipTimes.length;
+  timeText.textContent=clipTimes[clipIndex];
+});
+
+function updateDateTime(){
+  const now=new Date();
+  const day=now.toLocaleDateString('en-US',{weekday:'short'});
+  const date=now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const time=now.toLocaleTimeString('en-US',{
+    hour12:false,
+    hour:'2-digit',
+    minute:'2-digit',
+    second:'2-digit'
+  });
+
+  document.getElementById('dateText').textContent=`${day} - ${date}`;
+
+  if(!clipSetup){
+    timeText.textContent=time;
+  }
+}
+
+updateDateTime();
+setInterval(updateDateTime,1000);
+</script>
+</body>
+</html>
