@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Static 350x750 Box</title>
+<title>Static 350x600 Box</title>
 
 <style>
 *{
@@ -20,56 +19,18 @@ html,body{
 
 .bryaindex-box{
   position:absolute;
-  left:0;
+  left:50%;
   top:0;
+  margin-left:-175px;
   width:350px;
-  height:750px;
+  height:600px;
   border:1px solid #fff;
   background:#070707;
-}
-
-.label{
-  position:absolute;
-  color:#fff;
-  font-size:10px;
-  font-weight:bold;
-  letter-spacing:.08em;
-  white-space:nowrap;
-  pointer-events:none;
-}
-
-.label-top{
-  left:155px;
-  top:4px;
-}
-
-.label-bottom{
-  left:155px;
-  bottom:4px;
-}
-
-.label-left{
-  left:4px;
-  top:370px;
-  transform:rotate(-90deg);
-}
-
-.label-right{
-  right:4px;
-  top:370px;
-  transform:rotate(90deg);
 }
 </style>
 </head>
 
 <body>
-
-<div class="bryaindex-box">
-  <div class="label label-top">350px</div>
-  <div class="label label-bottom">350px</div>
-  <div class="label label-left">750px</div>
-  <div class="label label-right">750px</div>
-</div>
-
+<div class="bryaindex-box"></div>
 </body>
 </html>
