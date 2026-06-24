@@ -1,36 +1,69 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Static Centered 600x900 Box</title>
-
+<meta name="format-detection" content="telephone=no">
+<title>Jobsite Website</title>
 <style>
-*{
-  box-sizing:border-box;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:#000;
-  color:#fff;
-  font-family:Arial,sans-serif;
-}
-
-.bryaindex-box{
-  position:fixed;
-  left:50vw;
-  top:50vh;
-  transform:translate(-50%,-50%);
-  width:600px;
-  height:900px;
-  border:1px solid #fff;
-  background:#070707;
-}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#000;color:#f6f6f6;font-family:system-ui,sans-serif;overflow:hidden}
+body{position:relative;width:100%;height:100vh}
+.version-tag{position:absolute;left:0;top:0;width:600px;color:rgba(255,255,255,.72);font-size:12px;font-weight:900;letter-spacing:.18em;text-align:center;text-transform:uppercase;text-shadow:0 0 8px rgba(255,255,255,.18)}
+.gold-box{position:absolute;left:0;top:28px;width:600px;height:118px;border-radius:22px;background:#0b0b0b;border:1px solid #d4af37;box-shadow:0 0 12px rgba(212,175,55,.7),0 0 32px rgba(212,175,55,.35),inset 0 0 18px rgba(212,175,55,.08)}
+.flow-wrap{position:absolute;left:113px;top:20px;width:374px;height:78px}
+.flow-square{position:absolute;top:0;width:78px;height:78px;border:0;border-radius:18px;color:#fff;font-size:15px;font-weight:900;letter-spacing:.08em;opacity:.28;filter:grayscale(.5);box-shadow:none}
+#inBtn{left:0;background:#12361f;box-shadow:0 0 18px rgba(0,255,120,.28)}
+#outBtn{left:98px;background:#3a1414;box-shadow:0 0 18px rgba(255,50,50,.28)}
+#busyBtn{left:196px;background:#122a48;box-shadow:0 0 18px rgba(55,150,255,.28)}
+#brbBtn{left:294px;background:#2d174a;box-shadow:0 0 18px rgba(170,80,255,.32)}
+.flow-square.faded{opacity:.28;filter:grayscale(.5);box-shadow:none}
+.flow-square.active,.flow-square.scan-lit{opacity:1;filter:none}
+.flow-square.scan-lit#inBtn{box-shadow:0 0 16px rgba(0,255,120,.32)}
+.flow-square.scan-lit#outBtn{box-shadow:0 0 16px rgba(255,50,50,.32)}
+.flow-square.scan-lit#busyBtn{box-shadow:0 0 16px rgba(55,150,255,.32)}
+.flow-square.scan-lit#brbBtn{box-shadow:0 0 16px rgba(170,80,255,.38)}
+.price-section{display:none}
 </style>
 </head>
-
 <body>
-<div class="bryaindex-box"></div>
+<div class="version-tag">v5</div>
+<div class="gold-box">
+  <div class="flow-wrap">
+    <button class="flow-square faded" id="inBtn">IN</button>
+    <button class="flow-square faded" id="outBtn">OUT</button>
+    <button class="flow-square faded" id="busyBtn">BUSY</button>
+    <button class="flow-square faded" id="brbBtn">BRB</button>
+  </div>
+</div>
+<div class="price-section" id="priceSection"></div>
+<script>
+const flowButtons=[...document.querySelectorAll('.flow-square')];
+let scanTimer=null;
+let selected=false;
+let scanIndex=0;
+let scanDirection=1;
+function setActive(btn){
+  selected=true;
+  if(scanTimer)clearTimeout(scanTimer);
+  flowButtons.forEach(b=>b.classList.add('faded'));
+  flowButtons.forEach(b=>b.classList.remove('active','scan-lit'));
+  btn.classList.remove('faded');
+  btn.classList.add('active');
+}
+flowButtons.forEach(btn=>btn.addEventListener('click',()=>setActive(btn)));
+function startupScan(){
+  if(selected)return;
+  flowButtons.forEach(b=>b.classList.add('faded'));
+  flowButtons.forEach(b=>b.classList.remove('scan-lit','active'));
+  const btn=flowButtons[scanIndex];
+  btn.classList.remove('faded');
+  btn.classList.add('scan-lit');
+  if(scanIndex===flowButtons.length-1)scanDirection=-1;
+  if(scanIndex===0)scanDirection=1;
+  scanIndex+=scanDirection;
+  scanTimer=setTimeout(startupScan,1450);
+}
+startupScan();
+</script>
 </body>
 </html>
