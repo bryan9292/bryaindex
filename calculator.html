@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>Boring Calculator</title>
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:230px;
+  height:302px;
+  background:transparent;
+  font-family:Arial,sans-serif;
+  overflow:visible;
+}
+
+body{
+  position:relative;
+}
+
+.calculator{
+  position:absolute;
+  left:10px;
+  top:10px;
+  width:210px;
+  height:282px;
+  padding:9px;
+  background:transparent;
+  border:0;
+  border-radius:18px;
+  box-shadow:none;
+  display:grid;
+  grid-template-rows:44px 1fr;
+  gap:8px;
+  transition:.22s ease;
+}
+
+.display{
+  height:44px;
+  padding:3px 7px;
+  background:#d4d4d4;
+  border:3px solid #1d1d1d;
+  border-radius:11px;
+  color:#111;
+  font-size:20px;
+  font-weight:1000;
+  letter-spacing:0;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  line-height:34px;
+  box-shadow:3px 3px 0 #1d1d1d;
+  cursor:pointer;
+  user-select:none;
+  transition:.18s ease;
+}
+
+.display.number{
+  text-align:right;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:0;
+  line-height:34px;
+}
+
+.buttons{
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(5,1fr);
+  gap:7px;
+  opacity:0;
+  transform:translateY(-8px) scale(.98);
+  pointer-events:none;
+  transition:.18s ease;
+}
+
+.calculator.open{
+  padding:9px;
+  background:#9b9b9b;
+  border:3px solid #1d1d1d;
+  box-shadow:5px 5px 0 #1d1d1d;
+}
+
+.calculator.open .display{
+  box-shadow:none;
+}
+
+.calculator.open .buttons{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+
+button{
+  min-height:0;
+  height:auto;
+  font-size:20px;
+  border:3px solid #1d1d1d;
+  border-radius:10px;
+  cursor:pointer;
+  box-shadow:3px 3px 0 #1d1d1d;
+  transition:.08s;
+  background:#c7c7c7;
+  color:#111;
+  padding:0;
+}
+
+button span{
+  display:inline-block;
+}
+
+.bw-white{
+  color:#dcdcdc;
+  text-shadow:
+    1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000;
+}
+
+.bw-black{
+  color:#000;
+}
+
+button:active,
+button.lit,
+.display:active{
+  transform:translate(1.5px,1.5px);
+  box-shadow:1px 1px 0 #1d1d1d;
+  background:#777;
+}
+
+button.lit span{
+  animation:pressAnim .22s ease;
+}
+
+@keyframes pressAnim{
+  0%{
+    font-weight:900;
+    font-style:italic;
+    transform:scale(1.45) rotate(-8deg);
+  }
+
+  100%{
+    font-weight:400;
+    font-style:normal;
+    transform:scale(.72);
+  }
+}
+
+.equals{
+  background:#b6c8b6;
+}
+
+.clear{
+  background:#c8b6b6;
+}
+</style>
+</head>
+
+<body>
+<div class="calculator" id="calculator">
+  <div class="display" id="display" onclick="toggleCalc()">PR0F1T C4LC</div>
+
+  <div class="buttons">
+    <button class="clear" onclick="clearCalc(this)"><span class="bw-black">C</span></button>
+    <button onclick="press(this,'/')"><span class="bw-white">÷</span></button>
+    <button onclick="press(this,'*')"><span class="bw-black">×</span></button>
+    <button onclick="backspace(this)"><span class="bw-white">⌫</span></button>
+
+    <button onclick="press(this,'7')"><span class="bw-black">7</span></button>
+    <button onclick="press(this,'8')"><span class="bw-white">8</span></button>
+    <button onclick="press(this,'9')"><span class="bw-black">9</span></button>
+    <button onclick="press(this,'-')"><span class="bw-white">−</span></button>
+
+    <button onclick="press(this,'4')"><span class="bw-white">4</span></button>
+    <button onclick="press(this,'5')"><span class="bw-black">5</span></button>
+    <button onclick="press(this,'6')"><span class="bw-white">6</span></button>
+    <button onclick="press(this,'+')"><span class="bw-black">+</span></button>
+
+    <button onclick="press(this,'1')"><span class="bw-black">1</span></button>
+    <button onclick="press(this,'2')"><span class="bw-white">2</span></button>
+    <button onclick="press(this,'3')"><span class="bw-black">3</span></button>
+    <button class="equals" onclick="calculate(this)"><span class="bw-white">=</span></button>
+
+    <button onclick="press(this,'0')"><span class="bw-white">0</span></button>
+    <button onclick="press(this,'.')"><span class="bw-black">.</span></button>
+    <button onclick="press(this,'00')"><span class="bw-white">00</span></button>
+    <button onclick="press(this,'+')"><span class="bw-black">+</span></button>
+  </div>
+</div>
+
+<script>
+const startText='PR0F1T C4LC';
+let expression='';
+const calculator=document.getElementById('calculator');
+const display=document.getElementById('display');
+
+function toggleCalc(){
+  calculator.classList.toggle('open');
+}
+
+function openCalc(){
+  calculator.classList.add('open');
+}
+
+function light(btn){
+  btn.classList.remove('lit');
+  void btn.offsetWidth;
+  btn.classList.add('lit');
+  setTimeout(()=>{
+    btn.classList.remove('lit');
+  },220);
+}
+
+function update(){
+  if(expression){
+    display.classList.add('number');
+    display.textContent=expression;
+  }else{
+    display.classList.remove('number');
+    display.textContent=startText;
+  }
+}
+
+function press(btn,value){
+  openCalc();
+  light(btn);
+  expression+=value;
+  update();
+}
+
+function clearCalc(btn){
+  openCalc();
+  light(btn);
+  expression='';
+  update();
+}
+
+function backspace(btn){
+  openCalc();
+  light(btn);
+  expression=expression.slice(0,-1);
+  update();
+}
+
+function calculate(btn){
+  openCalc();
+  light(btn);
+  if(!expression){
+    return;
+  }
+
+  try{
+    expression=String(Function('return '+expression)());
+    update();
+  }catch(e){
+    display.classList.add('number');
+    display.textContent='Error';
+    expression='';
+  }
+}
+</script>
+</body>
+</html>
