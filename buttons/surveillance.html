@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>Surveillance Button</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:210px;
+  height:124px;
+  overflow:visible;
+  background:transparent;
+}
+
+body{
+  position:relative;
+}
+
+.camera-btn{
+  position:absolute;
+  left:20px;
+  top:22px;
+  width:170px;
+  min-height:82px;
+  padding:14px 46px 12px 12px;
+  border:2px solid #2a2a2a;
+  border-radius:14px;
+  background:linear-gradient(145deg,#202020,#070707);
+  color:#f2f2f2;
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  font-family:system-ui,sans-serif;
+  cursor:pointer;
+  overflow:hidden;
+  text-align:left;
+}
+
+.camera-btn span{
+  display:block;
+  margin-bottom:10px;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.06em;
+}
+
+.camera-btn small{
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:4px;
+  width:104px;
+}
+
+.camera-btn small b{
+  display:grid;
+  place-items:center;
+  min-height:20px;
+  border-radius:5px;
+  background:#2a2a2a;
+  color:#aaa;
+  font-size:12px;
+  font-weight:1000;
+}
+
+.dome{
+  position:absolute;
+  top:-18px;
+  right:-22px;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#f1f1f1,#9b9b9b 58%,#4f4f4f);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.55),
+    inset 0 0 0 3px rgba(40,40,40,.55),
+    inset 8px 8px 12px rgba(255,255,255,.35);
+}
+
+.glass{
+  position:absolute;
+  left:50%;
+  bottom:7px;
+  width:38px;
+  height:24px;
+  transform:translateX(-50%);
+  border-radius:0 0 40px 40px;
+  background:radial-gradient(circle at 42% 45%,#223a46,#071016 65%,#020405);
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.8);
+}
+
+.lens{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:14px;
+  height:14px;
+  transform:translate(-50%,-38%);
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#7fdcff,#112836 48%,#020406 72%);
+  box-shadow:inset 0 0 0 2px #050505;
+}
+</style>
+</head>
+
+<body>
+<button class="camera-btn" id="cameraBtn" type="button">
+  <span>SURVEILLANCE</span>
+
+  <small>
+    <b>1</b><b>2</b><b>3</b>
+    <b>4</b><b>5</b><b>6</b>
+    <b>7</b><b>8</b><b>9</b>
+  </small>
+
+  <i class="dome">
+    <i class="glass">
+      <i class="lens"></i>
+    </i>
+  </i>
+</button>
+
+<script>
+function activateCameras(){
+  try{parent.openCameras()}catch(e){}
+  try{parent.postMessage('open-cameras','*')}catch(e){}
+  try{top.postMessage('open-cameras','*')}catch(e){}
+}
+
+const cameraBtn=document.getElementById('cameraBtn');
+
+cameraBtn.addEventListener('click',activateCameras);
+cameraBtn.addEventListener('touchend',e=>{
+  e.preventDefault();
+  activateCameras();
+});
+</script>
+</body>
+</html>
