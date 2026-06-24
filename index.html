@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="format-detection" content="telephone=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Bryaindex</title>
 <style>
 *{
@@ -45,7 +48,21 @@ html,body{
 
 <body>
 <div class="bryaindex-box">
-  <iframe class="status-sticker" src="buttons/status.html" title="Status Buttons"></iframe>
+  <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
 </div>
+
+<script>
+const cacheVersion=Date.now()+'-'+Math.random().toString(36).slice(2);
+
+document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
+  const base=frame.dataset.src || frame.getAttribute('src');
+  if(!base){
+    return;
+  }
+
+  const joiner=base.includes('?') ? '&' : '?';
+  frame.src=base+joiner+'v='+cacheVersion;
+});
+</script>
 </body>
 </html>
