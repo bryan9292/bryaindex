@@ -41,6 +41,19 @@ html,body{
   overflow:hidden;
 }
 
+.status-sticker{
+  position:absolute;
+  left:0;
+  top:0;
+  width:384px;
+  height:146px;
+  border:0;
+  background:transparent;
+  display:block;
+  overflow:visible;
+  transform-origin:top left;
+}
+
 .utility-button{
   position:fixed;
   left:18px;
@@ -205,14 +218,7 @@ body.show-grid .grid-overlay{
   <div class="board-clip">
     <div class="grid-overlay" id="gridOverlay"></div>
 
-    <!--
-      FUTURE IFRAMES GO HERE.
-      Example:
-      <iframe class="your-sticker cache-frame" data-src="folder/file.html" title="Your Sticker"></iframe>
-
-      Placement lives in index.html.
-      Object art lives in its own file.
-    -->
+    <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
   </div>
 </div>
 
