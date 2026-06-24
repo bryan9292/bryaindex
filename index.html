@@ -8,703 +8,105 @@
 <meta http-equiv="Expires" content="0">
 <title>Bryaindex Foundation</title>
 <style>
-*{
-  box-sizing:border-box;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  background:#000;
-  color:#fff;
-  font-family:Arial,sans-serif;
-  overflow:hidden;
-}
-
-.bryaindex-box{
-  position:fixed;
-  left:50vw;
-  top:50vh;
-  transform:translate(-50%,-50%);
-  width:600px;
-  height:900px;
-  border:1px solid #fff;
-  background:#070707;
-}
-
-.board-clip{
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-}
-
-.status-sticker{
-  position:absolute;
-  left:0;
-  top:0;
-  width:384px;
-  height:146px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.surveillance-sticker{
-  position:absolute;
-  left:330px;
-  top:15px;
-  width:210px;
-  height:124px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.calculator-sticker{
-  position:absolute;
-  left:100px;
-  top:200px;
-  width:230px;
-  height:302px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.department-dashboard-sticker{
-  position:absolute;
-  left:345px;
-  top:165px;
-  width:230px;
-  height:62px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.nail-frame-sticker{
-  position:absolute;
-  left:350px;
-  top:250px;
-  width:210px;
-  height:255px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.family-friends-sticker{
-  position:absolute;
-  left:345px;
-  top:530px;
-  width:210px;
-  height:145px;
-  border:0;
-  background:transparent;
-  display:block;
-  overflow:visible;
-  transform-origin:top left;
-}
-
-.cameras-pop{
-  position:absolute;
-  left:40px;
-  top:330px;
-  width:520px;
-  height:420px;
-  display:none;
-  z-index:75;
-  border:1px solid rgba(255,255,255,.42);
-  background:#050505;
-  box-shadow:
-    0 24px 65px rgba(0,0,0,.72),
-    0 0 32px rgba(255,255,255,.12);
-}
-
-body.cameras-open .cameras-pop{
-  display:block;
-}
-
-.cameras-frame{
-  width:100%;
-  height:100%;
-  border:0;
-  background:#050505;
-  display:block;
-}
-
-.cameras-close{
-  position:absolute;
-  right:-9px;
-  top:-9px;
-  width:24px;
-  height:24px;
-  z-index:2;
-  border:1px solid rgba(255,255,255,.65);
-  border-radius:50%;
-  background:#070707;
-  color:#fff;
-  font-size:13px;
-  font-weight:900;
-  line-height:1;
-  cursor:pointer;
-  box-shadow:0 0 12px rgba(0,0,0,.8);
-}
-
-.utility-button{
-  position:fixed;
-  left:18px;
-  width:78px;
-  height:36px;
-  border:1px solid rgba(255,255,255,.55);
-  border-radius:999px;
-  background:#090909;
-  color:#fff;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  z-index:90;
-}
-
-.iframe-toggle{
-  top:calc(50vh - 44px);
-}
-
-.live-toggle{
-  top:50vh;
-}
-
-.grid-toggle{
-  top:calc(50vh + 44px);
-}
-
-body.show-iframes .iframe-toggle,
-body.live-mode .live-toggle,
-body.show-grid .grid-toggle{
-  background:#fff;
-  color:#000;
-}
-
-iframe.cache-frame{
-  pointer-events:auto;
-}
-
-body.show-iframes iframe.cache-frame{
-  outline:2px solid #fff;
-  outline-offset:0;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.75),
-    0 0 18px rgba(255,255,255,.55);
-  pointer-events:none;
-}
-
-.iframe-debug-label{
-  position:absolute;
-  display:none;
-  z-index:86;
-  padding:4px 6px;
-  border:1px solid rgba(255,255,255,.8);
-  border-radius:6px;
-  background:rgba(0,0,0,.86);
-  color:#fff;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.06em;
-  line-height:1.15;
-  pointer-events:none;
-  white-space:nowrap;
-  text-shadow:0 0 6px rgba(255,255,255,.35);
-}
-
-.iframe-drag-box{
-  position:absolute;
-  display:none;
-  z-index:85;
-  border:1px dashed rgba(255,255,255,.75);
-  background:rgba(255,255,255,.04);
-  cursor:move;
-  touch-action:none;
-}
-
-body.show-iframes .iframe-debug-label,
-body.show-iframes .iframe-drag-box{
-  display:block;
-}
-
-body.dragging-iframe,
-body.resizing-iframe{
-  cursor:move;
-  user-select:none;
-}
-
-.board-size-label{
-  position:absolute;
-  z-index:95;
-  padding:4px 7px;
-  border:1px solid rgba(255,255,255,.72);
-  border-radius:8px;
-  background:rgba(0,0,0,.82);
-  color:#fff;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.09em;
-  line-height:1;
-  pointer-events:none;
-  white-space:nowrap;
-  text-shadow:0 0 7px rgba(255,255,255,.35);
-}
-
-.board-width-label{
-  left:50%;
-  top:-24px;
-  transform:translateX(-50%);
-}
-
-.board-height-label{
-  right:-58px;
-  top:50%;
-  transform:translateY(-50%) rotate(90deg);
-  transform-origin:center;
-}
-
-.grid-overlay{
-  position:absolute;
-  inset:0;
-  display:none;
-  z-index:70;
-  pointer-events:none;
-  background-image:
-    linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px),
-    linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
-  background-size:
-    100px 100px,
-    100px 100px,
-    20px 20px,
-    20px 20px;
-}
-
-body.show-grid .grid-overlay{
-  display:block;
-}
-
-.grid-number{
-  position:absolute;
-  color:rgba(255,255,255,.88);
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.06em;
-  text-shadow:
-    0 0 5px #000,
-    0 0 8px #000;
-}
-
-.grid-x{
-  top:3px;
-  transform:translateX(3px);
-}
-
-.grid-y{
-  left:3px;
-  transform:translateY(3px);
-}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
+.bryaindex-box{position:fixed;left:50vw;top:50vh;transform:translate(-50%,-50%);width:600px;height:900px;border:1px solid #fff;background:#070707}
+.board-clip{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden}
+.status-sticker{position:absolute;left:0;top:0;width:384px;height:146px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.surveillance-sticker{position:absolute;left:330px;top:15px;width:210px;height:124px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.calculator-sticker{position:absolute;left:100px;top:200px;width:230px;height:302px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.department-dashboard-sticker{position:absolute;left:345px;top:165px;width:230px;height:62px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.nail-frame-sticker{position:absolute;left:350px;top:250px;width:210px;height:255px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.family-friends-sticker{position:absolute;left:345px;top:530px;width:210px;height:145px;border:0;background:transparent;display:block;overflow:visible;transform-origin:top left}
+.cameras-pop{position:absolute;left:40px;top:330px;width:520px;height:420px;display:none;z-index:75;border:1px solid rgba(255,255,255,.42);background:#050505;box-shadow:0 24px 65px rgba(0,0,0,.72),0 0 32px rgba(255,255,255,.12)}
+body.cameras-open .cameras-pop{display:block}
+.cameras-frame{width:100%;height:100%;border:0;background:#050505;display:block}
+.cameras-close{position:absolute;right:-9px;top:-9px;width:24px;height:24px;z-index:2;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:#070707;color:#fff;font-size:13px;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 0 12px rgba(0,0,0,.8)}
+.departments-pop{position:absolute;left:330px;top:228px;width:260px;height:360px;display:none;z-index:76;border:1px solid rgba(0,255,136,.42);background:transparent;box-shadow:0 22px 55px rgba(0,0,0,.68),0 0 26px rgba(0,255,136,.14)}
+body.departments-open .departments-pop{display:block}
+.departments-frame{width:100%;height:100%;border:0;background:transparent;display:block}
+.departments-close{position:absolute;right:-9px;top:-9px;width:24px;height:24px;z-index:2;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:#070707;color:#fff;font-size:13px;font-weight:900;line-height:1;cursor:pointer;box-shadow:0 0 12px rgba(0,0,0,.8)}
+.utility-button{position:fixed;left:18px;width:78px;height:36px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:#090909;color:#fff;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;z-index:90}
+.iframe-toggle{top:calc(50vh - 44px)}
+.live-toggle{top:50vh}
+.grid-toggle{top:calc(50vh + 44px)}
+body.show-iframes .iframe-toggle,body.live-mode .live-toggle,body.show-grid .grid-toggle{background:#fff;color:#000}
+iframe.cache-frame{pointer-events:auto}
+body.show-iframes iframe.cache-frame{outline:2px solid #fff;outline-offset:0;box-shadow:0 0 0 1px rgba(0,0,0,.75),0 0 18px rgba(255,255,255,.55);pointer-events:none}
+.iframe-debug-label{position:absolute;display:none;z-index:86;padding:4px 6px;border:1px solid rgba(255,255,255,.8);border-radius:6px;background:rgba(0,0,0,.86);color:#fff;font-size:10px;font-weight:900;letter-spacing:.06em;line-height:1.15;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.35)}
+.iframe-drag-box{position:absolute;display:none;z-index:85;border:1px dashed rgba(255,255,255,.75);background:rgba(255,255,255,.04);cursor:move;touch-action:none}
+body.show-iframes .iframe-debug-label,body.show-iframes .iframe-drag-box{display:block}
+body.dragging-iframe,body.resizing-iframe{cursor:move;user-select:none}
+.board-size-label{position:absolute;z-index:95;padding:4px 7px;border:1px solid rgba(255,255,255,.72);border-radius:8px;background:rgba(0,0,0,.82);color:#fff;font-size:11px;font-weight:900;letter-spacing:.09em;line-height:1;pointer-events:none;white-space:nowrap;text-shadow:0 0 7px rgba(255,255,255,.35)}
+.board-width-label{left:50%;top:-24px;transform:translateX(-50%)}
+.board-height-label{right:-58px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:center}
+.grid-overlay{position:absolute;inset:0;display:none;z-index:70;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px),linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);background-size:100px 100px,100px 100px,20px 20px,20px 20px}
+body.show-grid .grid-overlay{display:block}
+.grid-number{position:absolute;color:rgba(255,255,255,.88);font-size:10px;font-weight:900;letter-spacing:.06em;text-shadow:0 0 5px #000,0 0 8px #000}
+.grid-x{top:3px;transform:translateX(3px)}
+.grid-y{left:3px;transform:translateY(3px)}
 </style>
 </head>
-
 <body>
 <button class="utility-button iframe-toggle" type="button" onclick="toggleIframes()">iframe</button>
 <button class="utility-button live-toggle" type="button" onclick="toggleLive()">live</button>
 <button class="utility-button grid-toggle" type="button" onclick="toggleGrid()">grid</button>
-
 <div class="bryaindex-box">
   <div class="board-size-label board-width-label">600 W</div>
   <div class="board-size-label board-height-label">900 H</div>
-
   <div class="board-clip">
     <div class="grid-overlay" id="gridOverlay"></div>
-
     <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
     <iframe class="surveillance-sticker cache-frame" data-src="buttons/surveillance.html" title="Surveillance Button"></iframe>
     <iframe class="calculator-sticker cache-frame" data-src="calculator.html" title="Profit Calculator"></iframe>
     <iframe class="department-dashboard-sticker cache-frame" data-src="buttons/departmentdashboard.html" title="Department Dashboard"></iframe>
     <iframe class="nail-frame-sticker cache-frame" data-src="frames/nailframe.html" title="Nail Frame"></iframe>
     <iframe class="family-friends-sticker cache-frame" data-src="frames/familyfriends.html" title="Family Friends Frames"></iframe>
-
     <div class="cameras-pop" id="camerasPop">
       <button class="cameras-close" type="button" onclick="closeCameras()">×</button>
       <iframe class="cameras-frame" id="camerasFrame" data-src="cameras.html" title="Cameras"></iframe>
     </div>
+    <div class="departments-pop" id="departmentsPop">
+      <button class="departments-close" type="button" onclick="closeDepartments()">×</button>
+      <iframe class="departments-frame" id="departmentsFrame" data-src="departments.html" title="Departments"></iframe>
+    </div>
   </div>
 </div>
-
 <script>
 const cacheVersion=Date.now()+'-'+Math.random().toString(36).slice(2);
 let activeDrag=null;
 let activePinch=null;
-
-function cacheUrl(base){
-  const joiner=base.includes('?') ? '&' : '?';
-  return base+joiner+'v='+cacheVersion;
-}
-
-document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
-  const base=frame.dataset.src || frame.getAttribute('src');
-  if(!base){
-    return;
-  }
-
-  frame.src=cacheUrl(base);
-  frame.dataset.scale=frame.dataset.scale || '1';
-  frame.style.transformOrigin='top left';
-});
-
-function loadCameras(){
-  const frame=document.getElementById('camerasFrame');
-  if(frame && !frame.src){
-    frame.src=cacheUrl(frame.dataset.src);
-  }
-}
-
-function openCameras(){
-  loadCameras();
-  document.body.classList.add('cameras-open');
-}
-
-function closeCameras(){
-  document.body.classList.remove('cameras-open');
-}
-
-window.addEventListener('message',event=>{
-  if(event.data==='open-cameras'){
-    openCameras();
-  }
-});
-
-function clamp(value,min,max){
-  return Math.max(min,Math.min(max,value));
-}
-
-function boardSize(frame){
-  const board=frame.closest('.board-clip');
-  return {
-    width:board.offsetWidth,
-    height:board.offsetHeight
-  };
-}
-
-function frameScale(frame){
-  return Number(frame.dataset.scale || 1);
-}
-
-function maxFrameScale(frame){
-  const board=boardSize(frame);
-  return Math.min(6,board.width/frame.offsetWidth,board.height/frame.offsetHeight);
-}
-
-function frameBox(frame){
-  const scale=frameScale(frame);
-  const baseWidth=frame.offsetWidth;
-  const baseHeight=frame.offsetHeight;
-
-  return {
-    x:Math.round(frame.offsetLeft),
-    y:Math.round(frame.offsetTop),
-    baseWidth,
-    baseHeight,
-    scale,
-    width:Math.round(baseWidth*scale),
-    height:Math.round(baseHeight*scale)
-  };
-}
-
-function clampPosition(frame,left,top,width,height){
-  const board=boardSize(frame);
-  return {
-    left:Math.round(clamp(left,0,board.width-width)),
-    top:Math.round(clamp(top,0,board.height-height))
-  };
-}
-
-function clampFrameInside(frame){
-  const maxScale=maxFrameScale(frame);
-  if(frameScale(frame)>maxScale){
-    setFrameScale(frame,maxScale);
-  }
-
-  const box=frameBox(frame);
-  const pos=clampPosition(frame,box.x,box.y,box.width,box.height);
-  frame.style.left=pos.left+'px';
-  frame.style.top=pos.top+'px';
-}
-
-function iframeText(frame){
-  const box=frameBox(frame);
-  return `x ${box.x}  y ${box.y}  |  ${box.width} × ${box.height}  |  scale ${box.scale.toFixed(2)}`;
-}
-
-function clearIframeDebug(){
-  document.querySelectorAll('.iframe-debug-label,.iframe-drag-box').forEach(el=>el.remove());
-  activeDrag=null;
-  activePinch=null;
-  document.body.classList.remove('dragging-iframe','resizing-iframe');
-}
-
-function placeIframeDebug(frame,label,dragBox){
-  clampFrameInside(frame);
-  const box=frameBox(frame);
-
-  label.textContent=iframeText(frame);
-  label.style.left=box.x+'px';
-  label.style.top=(box.y+box.height+5)+'px';
-
-  dragBox.style.left=box.x+'px';
-  dragBox.style.top=box.y+'px';
-  dragBox.style.width=box.width+'px';
-  dragBox.style.height=box.height+'px';
-}
-
-function setFrameScale(frame,scale){
-  const safeScale=clamp(scale,.2,maxFrameScale(frame));
-  frame.dataset.scale=String(safeScale);
-  frame.style.transform=`scale(${safeScale})`;
-}
-
-function distance(a,b){
-  return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-}
-
-function midpoint(a,b){
-  return {
-    x:(a.clientX+b.clientX)/2,
-    y:(a.clientY+b.clientY)/2
-  };
-}
-
-function twoPointers(dragBox){
-  return [...dragBox._pointers.values()].slice(0,2);
-}
-
-function startPinch(frame,label,dragBox){
-  const points=twoPointers(dragBox);
-  if(points.length<2){
-    return;
-  }
-
-  activeDrag=null;
-  document.body.classList.remove('dragging-iframe');
-  document.body.classList.add('resizing-iframe');
-
-  const mid=midpoint(points[0],points[1]);
-  const box=frameBox(frame);
-
-  activePinch={
-    frame,
-    label,
-    dragBox,
-    startDistance:distance(points[0],points[1]),
-    startMidX:mid.x,
-    startMidY:mid.y,
-    startLeft:box.x,
-    startTop:box.y,
-    startScale:box.scale,
-    startVisualWidth:box.width,
-    startVisualHeight:box.height
-  };
-}
-
-function startDrag(frame,label,dragBox,pointer){
-  activePinch=null;
-  document.body.classList.remove('resizing-iframe');
-  document.body.classList.add('dragging-iframe');
-
-  const box=frameBox(frame);
-
-  activeDrag={
-    frame,
-    label,
-    dragBox,
-    pointerId:pointer.pointerId,
-    startClientX:pointer.clientX,
-    startClientY:pointer.clientY,
-    startLeft:box.x,
-    startTop:box.y,
-    startWidth:box.width,
-    startHeight:box.height
-  };
-}
-
-function makeIframeDebug(){
-  clearIframeDebug();
-
-  document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
-    const label=document.createElement('div');
-    const dragBox=document.createElement('div');
-
-    label.className='iframe-debug-label';
-    dragBox.className='iframe-drag-box';
-    dragBox._pointers=new Map();
-
-    dragBox.addEventListener('pointerdown',event=>{
-      event.preventDefault();
-      dragBox.setPointerCapture(event.pointerId);
-      dragBox._pointers.set(event.pointerId,event);
-
-      if(dragBox._pointers.size===1){
-        startDrag(frame,label,dragBox,event);
-      }
-
-      if(dragBox._pointers.size>=2){
-        startPinch(frame,label,dragBox);
-      }
-    });
-
-    dragBox.addEventListener('pointermove',event=>{
-      if(!dragBox._pointers.has(event.pointerId)){
-        return;
-      }
-
-      dragBox._pointers.set(event.pointerId,event);
-
-      if(activePinch && activePinch.dragBox===dragBox && dragBox._pointers.size>=2){
-        const points=twoPointers(dragBox);
-        const currentDistance=distance(points[0],points[1]);
-        const currentMid=midpoint(points[0],points[1]);
-        const scaleChange=currentDistance/activePinch.startDistance;
-        const nextScale=clamp(activePinch.startScale*scaleChange,.2,maxFrameScale(frame));
-        const nextWidth=Math.round(frame.offsetWidth*nextScale);
-        const nextHeight=Math.round(frame.offsetHeight*nextScale);
-        const midDx=currentMid.x-activePinch.startMidX;
-        const midDy=currentMid.y-activePinch.startMidY;
-        const unclampedLeft=activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2;
-        const unclampedTop=activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2;
-        const clamped=clampPosition(frame,unclampedLeft,unclampedTop,nextWidth,nextHeight);
-
-        frame.style.left=clamped.left+'px';
-        frame.style.top=clamped.top+'px';
-        setFrameScale(frame,nextScale);
-
-        placeIframeDebug(frame,label,dragBox);
-        return;
-      }
-
-      if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){
-        const dx=event.clientX-activeDrag.startClientX;
-        const dy=event.clientY-activeDrag.startClientY;
-        const unclampedLeft=activeDrag.startLeft+dx;
-        const unclampedTop=activeDrag.startTop+dy;
-        const clamped=clampPosition(frame,unclampedLeft,unclampedTop,activeDrag.startWidth,activeDrag.startHeight);
-
-        frame.style.left=clamped.left+'px';
-        frame.style.top=clamped.top+'px';
-
-        placeIframeDebug(frame,label,dragBox);
-      }
-    });
-
-    function stopPointer(event){
-      if(dragBox._pointers.has(event.pointerId)){
-        dragBox._pointers.delete(event.pointerId);
-      }
-
-      try{
-        dragBox.releasePointerCapture(event.pointerId);
-      }catch(error){}
-
-      if(dragBox._pointers.size>=2){
-        startPinch(frame,label,dragBox);
-        return;
-      }
-
-      if(dragBox._pointers.size===1){
-        const remaining=[...dragBox._pointers.values()][0];
-        activePinch=null;
-        startDrag(frame,label,dragBox,remaining);
-        return;
-      }
-
-      activeDrag=null;
-      activePinch=null;
-      document.body.classList.remove('dragging-iframe','resizing-iframe');
-    }
-
-    dragBox.addEventListener('pointerup',stopPointer);
-    dragBox.addEventListener('pointercancel',stopPointer);
-    dragBox.addEventListener('lostpointercapture',event=>{
-      if(dragBox._pointers.has(event.pointerId)){
-        dragBox._pointers.delete(event.pointerId);
-      }
-    });
-
-    placeIframeDebug(frame,label,dragBox);
-    frame.parentElement.appendChild(dragBox);
-    frame.parentElement.appendChild(label);
-  });
-}
-
-function buildGrid(){
-  const grid=document.getElementById('gridOverlay');
-  grid.innerHTML='';
-
-  for(let x=0;x<=600;x+=100){
-    const label=document.createElement('div');
-    label.className='grid-number grid-x';
-    label.textContent=x;
-    label.style.left=x+'px';
-    grid.appendChild(label);
-  }
-
-  for(let y=0;y<=900;y+=100){
-    const label=document.createElement('div');
-    label.className='grid-number grid-y';
-    label.textContent=y;
-    label.style.top=y+'px';
-    grid.appendChild(label);
-  }
-}
-
-function toggleIframes(){
-  document.body.classList.remove('live-mode');
-  document.body.classList.toggle('show-iframes');
-
-  if(document.body.classList.contains('show-iframes')){
-    makeIframeDebug();
-  }else{
-    clearIframeDebug();
-  }
-}
-
-function toggleLive(){
-  document.body.classList.remove('show-iframes');
-  clearIframeDebug();
-  document.body.classList.toggle('live-mode');
-}
-
-function toggleGrid(){
-  document.body.classList.toggle('show-grid');
-  buildGrid();
-}
-
-window.addEventListener('resize',()=>{
-  if(document.body.classList.contains('show-iframes')){
-    makeIframeDebug();
-  }
-});
-
+function cacheUrl(base){const joiner=base.includes('?') ? '&' : '?';return base+joiner+'v='+cacheVersion}
+document.querySelectorAll('iframe.cache-frame').forEach(frame=>{const base=frame.dataset.src || frame.getAttribute('src');if(!base){return}frame.src=cacheUrl(base);frame.dataset.scale=frame.dataset.scale || '1';frame.style.transformOrigin='top left'});
+function loadCameras(){const frame=document.getElementById('camerasFrame');if(frame && !frame.src){frame.src=cacheUrl(frame.dataset.src)}}
+function openCameras(){loadCameras();document.body.classList.add('cameras-open')}
+function closeCameras(){document.body.classList.remove('cameras-open')}
+function loadDepartments(){const frame=document.getElementById('departmentsFrame');if(frame && !frame.src){frame.src=cacheUrl(frame.dataset.src)}}
+function openDepartments(){loadDepartments();document.body.classList.add('departments-open')}
+function closeDepartments(){document.body.classList.remove('departments-open')}
+window.addEventListener('message',event=>{if(event.data==='open-cameras'){openCameras()}if(event.data==='open-departments'){openDepartments()}});
+function clamp(value,min,max){return Math.max(min,Math.min(max,value))}
+function boardSize(frame){const board=frame.closest('.board-clip');return {width:board.offsetWidth,height:board.offsetHeight}}
+function frameScale(frame){return Number(frame.dataset.scale || 1)}
+function maxFrameScale(frame){const board=boardSize(frame);return Math.min(6,board.width/frame.offsetWidth,board.height/frame.offsetHeight)}
+function frameBox(frame){const scale=frameScale(frame);const baseWidth=frame.offsetWidth;const baseHeight=frame.offsetHeight;return {x:Math.round(frame.offsetLeft),y:Math.round(frame.offsetTop),baseWidth,baseHeight,scale,width:Math.round(baseWidth*scale),height:Math.round(baseHeight*scale)}}
+function clampPosition(frame,left,top,width,height){const board=boardSize(frame);return {left:Math.round(clamp(left,0,board.width-width)),top:Math.round(clamp(top,0,board.height-height))}}
+function clampFrameInside(frame){const maxScale=maxFrameScale(frame);if(frameScale(frame)>maxScale){setFrameScale(frame,maxScale)}const box=frameBox(frame);const pos=clampPosition(frame,box.x,box.y,box.width,box.height);frame.style.left=pos.left+'px';frame.style.top=pos.top+'px'}
+function iframeText(frame){const box=frameBox(frame);return `x ${box.x}  y ${box.y}  |  ${box.width} × ${box.height}  |  scale ${box.scale.toFixed(2)}`}
+function clearIframeDebug(){document.querySelectorAll('.iframe-debug-label,.iframe-drag-box').forEach(el=>el.remove());activeDrag=null;activePinch=null;document.body.classList.remove('dragging-iframe','resizing-iframe')}
+function placeIframeDebug(frame,label,dragBox){clampFrameInside(frame);const box=frameBox(frame);label.textContent=iframeText(frame);label.style.left=box.x+'px';label.style.top=(box.y+box.height+5)+'px';dragBox.style.left=box.x+'px';dragBox.style.top=box.y+'px';dragBox.style.width=box.width+'px';dragBox.style.height=box.height+'px'}
+function setFrameScale(frame,scale){const safeScale=clamp(scale,.2,maxFrameScale(frame));frame.dataset.scale=String(safeScale);frame.style.transform=`scale(${safeScale})`}
+function distance(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
+function midpoint(a,b){return {x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2}}
+function twoPointers(dragBox){return [...dragBox._pointers.values()].slice(0,2)}
+function startPinch(frame,label,dragBox){const points=twoPointers(dragBox);if(points.length<2){return}activeDrag=null;document.body.classList.remove('dragging-iframe');document.body.classList.add('resizing-iframe');const mid=midpoint(points[0],points[1]);const box=frameBox(frame);activePinch={frame,label,dragBox,startDistance:distance(points[0],points[1]),startMidX:mid.x,startMidY:mid.y,startLeft:box.x,startTop:box.y,startScale:box.scale,startVisualWidth:box.width,startVisualHeight:box.height}}
+function startDrag(frame,label,dragBox,pointer){activePinch=null;document.body.classList.remove('resizing-iframe');document.body.classList.add('dragging-iframe');const box=frameBox(frame);activeDrag={frame,label,dragBox,pointerId:pointer.pointerId,startClientX:pointer.clientX,startClientY:pointer.clientY,startLeft:box.x,startTop:box.y,startWidth:box.width,startHeight:box.height}}
+function makeIframeDebug(){clearIframeDebug();document.querySelectorAll('iframe.cache-frame').forEach(frame=>{const label=document.createElement('div');const dragBox=document.createElement('div');label.className='iframe-debug-label';dragBox.className='iframe-drag-box';dragBox._pointers=new Map();dragBox.addEventListener('pointerdown',event=>{event.preventDefault();dragBox.setPointerCapture(event.pointerId);dragBox._pointers.set(event.pointerId,event);if(dragBox._pointers.size===1){startDrag(frame,label,dragBox,event)}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox)}});dragBox.addEventListener('pointermove',event=>{if(!dragBox._pointers.has(event.pointerId)){return}dragBox._pointers.set(event.pointerId,event);if(activePinch && activePinch.dragBox===dragBox && dragBox._pointers.size>=2){const points=twoPointers(dragBox);const currentDistance=distance(points[0],points[1]);const currentMid=midpoint(points[0],points[1]);const scaleChange=currentDistance/activePinch.startDistance;const nextScale=clamp(activePinch.startScale*scaleChange,.2,maxFrameScale(frame));const nextWidth=Math.round(frame.offsetWidth*nextScale);const nextHeight=Math.round(frame.offsetHeight*nextScale);const midDx=currentMid.x-activePinch.startMidX;const midDy=currentMid.y-activePinch.startMidY;const unclampedLeft=activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2;const unclampedTop=activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,nextWidth,nextHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';setFrameScale(frame,nextScale);placeIframeDebug(frame,label,dragBox);return}if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){const dx=event.clientX-activeDrag.startClientX;const dy=event.clientY-activeDrag.startClientY;const unclampedLeft=activeDrag.startLeft+dx;const unclampedTop=activeDrag.startTop+dy;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,activeDrag.startWidth,activeDrag.startHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';placeIframeDebug(frame,label,dragBox)}});function stopPointer(event){if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}try{dragBox.releasePointerCapture(event.pointerId)}catch(error){}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox);return}if(dragBox._pointers.size===1){const remaining=[...dragBox._pointers.values()][0];activePinch=null;startDrag(frame,label,dragBox,remaining);return}activeDrag=null;activePinch=null;document.body.classList.remove('dragging-iframe','resizing-iframe')}dragBox.addEventListener('pointerup',stopPointer);dragBox.addEventListener('pointercancel',stopPointer);dragBox.addEventListener('lostpointercapture',event=>{if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}});placeIframeDebug(frame,label,dragBox);frame.parentElement.appendChild(dragBox);frame.parentElement.appendChild(label)})}
+function buildGrid(){const grid=document.getElementById('gridOverlay');grid.innerHTML='';for(let x=0;x<=600;x+=100){const label=document.createElement('div');label.className='grid-number grid-x';label.textContent=x;label.style.left=x+'px';grid.appendChild(label)}for(let y=0;y<=900;y+=100){const label=document.createElement('div');label.className='grid-number grid-y';label.textContent=y;label.style.top=y+'px';grid.appendChild(label)}}
+function toggleIframes(){document.body.classList.remove('live-mode');document.body.classList.toggle('show-iframes');if(document.body.classList.contains('show-iframes')){makeIframeDebug()}else{clearIframeDebug()}}
+function toggleLive(){document.body.classList.remove('show-iframes');clearIframeDebug();document.body.classList.toggle('live-mode')}
+function toggleGrid(){document.body.classList.toggle('show-grid');buildGrid()}
+window.addEventListener('resize',()=>{if(document.body.classList.contains('show-iframes')){makeIframeDebug()}});
 buildGrid();
 </script>
 </body>
