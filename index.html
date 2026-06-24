@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Static 400x900 Box</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#000;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+.bryaindex-box{
+  position:absolute;
+  left:40px;
+  top:40px;
+  width:400px;
+  height:900px;
+  border:1px solid #fff;
+  background:#070707;
+}
+
+.label{
+  position:absolute;
+  color:#fff;
+  font-size:10px;
+  font-weight:bold;
+  letter-spacing:.08em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+.label-top{
+  left:160px;
+  top:-18px;
+}
+
+.label-bottom{
+  left:160px;
+  bottom:-18px;
+}
+
+.label-left{
+  left:-42px;
+  top:440px;
+  transform:rotate(-90deg);
+}
+
+.label-right{
+  right:-42px;
+  top:440px;
+  transform:rotate(90deg);
+}
+</style>
+</head>
+
+<body>
+
+<div class="bryaindex-box">
+  <div class="label label-top">400px</div>
+  <div class="label label-bottom">400px</div>
+  <div class="label label-left">900px</div>
+  <div class="label label-right">900px</div>
+</div>
+
+</body>
+</html>
