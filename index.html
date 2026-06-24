@@ -84,17 +84,26 @@ html,body{
 }
 
 .iframe-toggle{
-  top:calc(50vh - 22px);
+  top:calc(50vh - 44px);
+}
+
+.live-toggle{
+  top:50vh;
 }
 
 .grid-toggle{
-  top:calc(50vh + 22px);
+  top:calc(50vh + 44px);
 }
 
 body.show-iframes .iframe-toggle,
+body.live-mode .live-toggle,
 body.show-grid .grid-toggle{
   background:#fff;
   color:#000;
+}
+
+iframe.cache-frame{
+  pointer-events:auto;
 }
 
 body.show-iframes iframe.cache-frame{
@@ -222,6 +231,7 @@ body.show-grid .grid-overlay{
 
 <body>
 <button class="utility-button iframe-toggle" type="button" onclick="toggleIframes()">iframe</button>
+<button class="utility-button live-toggle" type="button" onclick="toggleLive()">live</button>
 <button class="utility-button grid-toggle" type="button" onclick="toggleGrid()">grid</button>
 
 <div class="bryaindex-box">
@@ -536,6 +546,7 @@ function buildGrid(){
 }
 
 function toggleIframes(){
+  document.body.classList.remove('live-mode');
   document.body.classList.toggle('show-iframes');
 
   if(document.body.classList.contains('show-iframes')){
@@ -543,6 +554,12 @@ function toggleIframes(){
   }else{
     clearIframeDebug();
   }
+}
+
+function toggleLive(){
+  document.body.classList.remove('show-iframes');
+  clearIframeDebug();
+  document.body.classList.toggle('live-mode');
 }
 
 function toggleGrid(){
