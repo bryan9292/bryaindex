@@ -74,6 +74,28 @@ body.show-iframes .iframe-toggle{
   background:#fff;
   color:#000;
 }
+
+.iframe-debug-label{
+  position:absolute;
+  display:none;
+  z-index:80;
+  padding:3px 6px;
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:6px;
+  background:rgba(0,0,0,.82);
+  color:#fff;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+  line-height:1;
+  pointer-events:none;
+  white-space:nowrap;
+  text-shadow:0 0 6px rgba(255,255,255,.35);
+}
+
+body.show-iframes .iframe-debug-label{
+  display:block;
+}
 </style>
 </head>
 
@@ -97,9 +119,50 @@ document.querySelectorAll('iframe.cache-frame').forEach(frame=>{
   frame.src=base+joiner+'v='+cacheVersion;
 });
 
+function clearIframeLabels(){
+  document.querySelectorAll('.iframe-debug-label').forEach(label=>label.remove());
+}
+
+function makeIframeLabels(){
+  clearIframeLabels();
+
+  document.querySelectorAll('iframe.cache-frame').forEach((frame,index)=>{
+    const label=document.createElement('div');
+    const w=Math.round(frame.offsetWidth);
+    const h=Math.round(frame.offsetHeight);
+
+    label.className='iframe-debug-label';
+    label.textContent=`${w} × ${h}`;
+
+    const left=frame.offsetLeft;
+    const top=frame.offsetTop;
+
+    label.style.left=left+'px';
+    label.style.top=(top-18)+'px';
+
+    if(top<20){
+      label.style.top=(top+h+4)+'px';
+    }
+
+    frame.parentElement.appendChild(label);
+  });
+}
+
 function toggleIframes(){
   document.body.classList.toggle('show-iframes');
+
+  if(document.body.classList.contains('show-iframes')){
+    makeIframeLabels();
+  }else{
+    clearIframeLabels();
+  }
 }
+
+window.addEventListener('resize',()=>{
+  if(document.body.classList.contains('show-iframes')){
+    makeIframeLabels();
+  }
+});
 </script>
 </body>
 </html>
