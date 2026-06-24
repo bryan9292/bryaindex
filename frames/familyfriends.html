@@ -12,7 +12,7 @@
 html,body{
   margin:0;
   padding:0;
-  width:210px;
+  width:190px;
   height:145px;
   overflow:visible;
   background:transparent;
@@ -26,28 +26,35 @@ body{
   position:absolute;
   left:10px;
   top:10px;
-  width:190px;
+  width:170px;
 }
 
 .main-title{
+  width:100%;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:4px;
+  gap:6px;
   margin-bottom:3px;
   font-family:Georgia,"Times New Roman",serif;
-  font-size:13px;
+  font-size:12px;
   font-weight:900;
   line-height:1;
-  letter-spacing:.035em;
+  letter-spacing:.025em;
   text-align:center;
   white-space:nowrap;
-  text-shadow:
-    0 1px 0 rgba(255,160,160,.35),
-    0 4px 8px rgba(0,0,0,.75);
+}
+
+.main-title span{
+  display:block;
+  width:100%;
+  text-align:center;
 }
 
 .main-title .left{
   color:#8f1515;
+  text-shadow:
+    0 1px 0 rgba(255,160,160,.35),
+    0 4px 8px rgba(0,0,0,.75);
 }
 
 .main-title .right{
@@ -61,7 +68,7 @@ body{
   width:100%;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:4px;
+  gap:6px;
   align-items:flex-start;
 }
 
