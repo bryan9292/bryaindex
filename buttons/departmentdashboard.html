@@ -34,6 +34,8 @@ body{
   display:grid;
   place-items:center;
   text-align:center;
+  cursor:pointer;
+  user-select:none;
 }
 
 h1{
@@ -51,8 +53,24 @@ h1{
 </head>
 
 <body>
-  <div class="panel">
+  <div class="panel" id="departmentPanel">
     <h1>Department Dashboard</h1>
   </div>
+
+<script>
+function activateDepartments(){
+  try{parent.openDepartments()}catch(e){}
+  try{parent.postMessage('open-departments','*')}catch(e){}
+  try{top.postMessage('open-departments','*')}catch(e){}
+}
+
+const departmentPanel=document.getElementById('departmentPanel');
+
+departmentPanel.addEventListener('click',activateDepartments);
+departmentPanel.addEventListener('touchend',event=>{
+  event.preventDefault();
+  activateDepartments();
+});
+</script>
 </body>
 </html>
