@@ -1,0 +1,132 @@
+Inventory books
+
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inventory Book Set Button</title>
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  background:#111;
+  font-family:system-ui,sans-serif;
+}
+
+.inventory-books{
+  position:relative;
+  width:430px;
+  height:220px;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+}
+
+.shelf{
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:20px;
+  height:18px;
+  border:3px solid #1b0c05;
+  border-radius:6px;
+  background:linear-gradient(#6d351d,#2b1208);
+  box-shadow:
+    0 12px 20px rgba(0,0,0,.6),
+    inset 0 3px 0 rgba(255,255,255,.12);
+}
+
+.books{
+  position:absolute;
+  left:28px;
+  right:28px;
+  bottom:38px;
+  height:160px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:4px;
+}
+
+.book{
+  position:relative;
+  width:40px;
+  height:150px;
+  border-radius:8px 8px 5px 5px;
+  overflow:hidden;
+  color:#f7ebc4;
+  background:
+    linear-gradient(90deg,
+      rgba(0,0,0,.42),
+      transparent 22%,
+      rgba(255,255,255,.12) 47%,
+      transparent 72%,
+      rgba(0,0,0,.35)
+    ),
+    var(--cover);
+  box-shadow:
+    0 9px 14px rgba(0,0,0,.45),
+    inset 0 4px 0 rgba(255,255,255,.14),
+    inset 0 -8px 12px rgba(0,0,0,.32);
+  transform:rotate(var(--tilt));
+}
+
+.book::before{
+  content:"";
+  position:absolute;
+  left:7px;
+  right:7px;
+  top:12px;
+  height:3px;
+  background:#d3a84d;
+  box-shadow:
+    0 112px 0 #d3a84d;
+}
+
+.letter{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:31px;
+  font-weight:950;
+  text-shadow:
+    0 3px 0 #190904,
+    0 0 8px rgba(255,222,140,.38);
+  z-index:3;
+}
+
+.book:nth-child(1){height:146px;--tilt:-2deg;--cover:linear-gradient(#7b2d18,#3b160c)}
+.book:nth-child(2){height:156px;--tilt:1deg;--cover:linear-gradient(#244f38,#102719)}
+.book:nth-child(3){height:142px;--tilt:-1deg;--cover:linear-gradient(#5b2615,#2e1008)}
+.book:nth-child(4){height:160px;--tilt:2deg;--cover:linear-gradient(#253f69,#111d34)}
+.book:nth-child(5){height:150px;--tilt:-2deg;--cover:linear-gradient(#7a5a20,#35250b)}
+.book:nth-child(6){height:158px;--tilt:1deg;--cover:linear-gradient(#6f2615,#2f1008)}
+.book:nth-child(7){height:144px;--tilt:-1deg;--cover:linear-gradient(#3e315f,#1b132c)}
+.book:nth-child(8){height:154px;--tilt:2deg;--cover:linear-gradient(#17484f,#082428)}
+.book:nth-child(9){height:148px;--tilt:-1deg;--cover:linear-gradient(#7d331d,#3b160c)}
+</style>
+</head>
+<body>
+<button class="inventory-books">
+  <span class="books">
+    <span class="book"><span class="letter">I</span></span>
+    <span class="book"><span class="letter">N</span></span>
+    <span class="book"><span class="letter">V</span></span>
+    <span class="book"><span class="letter">E</span></span>
+    <span class="book"><span class="letter">N</span></span>
+    <span class="book"><span class="letter">T</span></span>
+    <span class="book"><span class="letter">O</span></span>
+    <span class="book"><span class="letter">R</span></span>
+    <span class="book"><span class="letter">Y</span></span>
+  </span>
+
+  <span class="shelf"></span>
+</button>
+</body>
+</html>
