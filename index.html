@@ -37,8 +37,12 @@ body.departments-open .departments-pop{display:block}
 .iframe-toggle{top:calc(50vh - 44px)}
 .live-toggle{top:50vh}
 .grid-toggle{top:calc(50vh + 44px)}
-body.show-iframes .iframe-toggle,body.live-mode .live-toggle,body.show-grid .grid-toggle{background:#fff;color:#000}
+.buttons-toggle{top:calc(50vh + 88px)}
+.frames-toggle{top:calc(50vh + 132px)}
+body.show-iframes .iframe-toggle,body.live-mode .live-toggle,body.show-grid .grid-toggle,body.show-buttons .buttons-toggle,body.show-frames .frames-toggle{background:#fff;color:#000}
 iframe.cache-frame{pointer-events:auto}
+body:not(.show-buttons) iframe[data-group="buttons"]{display:none}
+body:not(.show-frames) iframe[data-group="frames"]{display:none}
 body.show-iframes iframe.cache-frame{outline:2px solid #fff;outline-offset:0;box-shadow:0 0 0 1px rgba(0,0,0,.75),0 0 18px rgba(255,255,255,.55);pointer-events:none}
 .iframe-debug-label{position:absolute;display:none;z-index:86;padding:4px 6px;border:1px solid rgba(255,255,255,.8);border-radius:6px;background:rgba(0,0,0,.86);color:#fff;font-size:10px;font-weight:900;letter-spacing:.06em;line-height:1.15;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,255,.35)}
 .iframe-drag-box{position:absolute;display:none;z-index:85;border:1px dashed rgba(255,255,255,.75);background:rgba(255,255,255,.04);cursor:move;touch-action:none}
@@ -58,24 +62,26 @@ body.show-grid .grid-overlay{display:block}
 <button class="utility-button iframe-toggle" type="button" onclick="toggleIframes()">iframe</button>
 <button class="utility-button live-toggle" type="button" onclick="toggleLive()">live</button>
 <button class="utility-button grid-toggle" type="button" onclick="toggleGrid()">grid</button>
+<button class="utility-button buttons-toggle" type="button" onclick="toggleButtons()">buttons</button>
+<button class="utility-button frames-toggle" type="button" onclick="toggleFrames()">frames</button>
 <div class="bryaindex-box">
   <div class="board-size-label board-width-label">600 W</div>
   <div class="board-size-label board-height-label">900 H</div>
   <div class="board-clip">
     <div class="grid-overlay" id="gridOverlay"></div>
-    <iframe class="status-sticker cache-frame" data-src="buttons/status.html" title="Status Buttons"></iframe>
-    <iframe class="surveillance-sticker cache-frame" data-src="buttons/surveillance.html" title="Surveillance Button"></iframe>
+    <iframe class="status-sticker cache-frame" data-group="buttons" data-src="buttons/status.html" title="Status Buttons"></iframe>
+    <iframe class="surveillance-sticker cache-frame" data-group="buttons" data-src="buttons/surveillance.html" title="Surveillance Button"></iframe>
     <iframe class="calculator-sticker cache-frame" data-src="calculator.html" title="Profit Calculator"></iframe>
-    <iframe class="department-dashboard-sticker cache-frame" data-src="buttons/departmentdashboard.html" title="Department Dashboard"></iframe>
-    <iframe class="record-checker-sticker cache-frame" data-src="buttons/recordchecker.html" title="Record Checker"></iframe>
-    <iframe class="preservation-sticker cache-frame" data-src="buttons/preservation.html" title="Preservation Conservation"></iframe>
-    <iframe class="briefcase-sticker cache-frame" data-src="buttons/briefcase.html" data-scale="0.72" title="Failsafe Briefcase"></iframe>
-    <iframe class="reminder-sticker cache-frame" data-src="buttons/reminder.html" data-scale="0.68" title="Reminder Binder"></iframe>
-    <iframe class="nail-frame-sticker cache-frame" data-src="frames/nailframe.html" title="Nail Frame"></iframe>
-    <iframe class="family-friends-sticker cache-frame" data-src="frames/familyfriends.html" title="Family Friends Frames"></iframe>
-    <iframe class="billboard-sticker cache-frame" data-src="buttons/billboard.html" title="Billboard Chalkboard"></iframe>
+    <iframe class="department-dashboard-sticker cache-frame" data-group="buttons" data-src="buttons/departmentdashboard.html" title="Department Dashboard"></iframe>
+    <iframe class="record-checker-sticker cache-frame" data-group="buttons" data-src="buttons/recordchecker.html" title="Record Checker"></iframe>
+    <iframe class="preservation-sticker cache-frame" data-group="buttons" data-src="buttons/preservation.html" title="Preservation Conservation"></iframe>
+    <iframe class="briefcase-sticker cache-frame" data-group="buttons" data-src="buttons/briefcase.html" data-scale="0.72" title="Failsafe Briefcase"></iframe>
+    <iframe class="reminder-sticker cache-frame" data-group="buttons" data-src="buttons/reminder.html" data-scale="0.68" title="Reminder Binder"></iframe>
+    <iframe class="nail-frame-sticker cache-frame" data-group="frames" data-src="frames/nailframe.html" title="Nail Frame"></iframe>
+    <iframe class="family-friends-sticker cache-frame" data-group="frames" data-src="frames/familyfriends.html" title="Family Friends Frames"></iframe>
+    <iframe class="billboard-sticker cache-frame" data-group="buttons" data-src="buttons/billboard.html" title="Billboard Chalkboard"></iframe>
     <iframe class="fridge-sticker cache-frame" data-src="fridge.html" data-scale="0.82" title="Fridge"></iframe>
-    <iframe class="frame3-sticker cache-frame" data-src="frames/frame3.html" data-scale="0.65" title="Frame 3"></iframe>
+    <iframe class="frame3-sticker cache-frame" data-group="frames" data-src="frames/frame3.html" data-scale="0.65" title="Frame 3"></iframe>
     <div class="cameras-pop" id="camerasPop">
       <button class="cameras-close" type="button" onclick="closeCameras()">×</button>
       <iframe class="cameras-frame" id="camerasFrame" data-src="cameras.html" title="Cameras"></iframe>
@@ -100,6 +106,9 @@ function openDepartments(){if(document.body.classList.contains('departments-open
 function closeDepartments(){document.body.classList.remove('departments-open')}
 window.addEventListener('message',event=>{if(event.data==='open-cameras'){openCameras()}if(event.data==='open-departments'){openDepartments()}});
 function clamp(value,min,max){return Math.max(min,Math.min(max,value))}
+function refreshIframeDebug(){if(document.body.classList.contains('show-iframes')){makeIframeDebug()}}
+function isFrameVisible(frame){return frame.offsetParent!==null && getComputedStyle(frame).display!=='none'}
+function visibleCacheFrames(){return [...document.querySelectorAll('iframe.cache-frame')].filter(isFrameVisible)}
 function boardSize(frame){const board=frame.closest('.board-clip');return {width:board.offsetWidth,height:board.offsetHeight}}
 function frameScale(frame){return Number(frame.dataset.scale || 1)}
 function maxFrameScale(frame){const board=boardSize(frame);return Math.min(6,board.width/frame.offsetWidth,board.height/frame.offsetHeight)}
@@ -115,11 +124,13 @@ function midpoint(a,b){return {x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)
 function twoPointers(dragBox){return [...dragBox._pointers.values()].slice(0,2)}
 function startPinch(frame,label,dragBox){const points=twoPointers(dragBox);if(points.length<2){return}activeDrag=null;document.body.classList.remove('dragging-iframe');document.body.classList.add('resizing-iframe');const mid=midpoint(points[0],points[1]);const box=frameBox(frame);activePinch={frame,label,dragBox,startDistance:distance(points[0],points[1]),startMidX:mid.x,startMidY:mid.y,startLeft:box.x,startTop:box.y,startScale:box.scale,startVisualWidth:box.width,startVisualHeight:box.height}}
 function startDrag(frame,label,dragBox,pointer){activePinch=null;document.body.classList.remove('resizing-iframe');document.body.classList.add('dragging-iframe');const box=frameBox(frame);activeDrag={frame,label,dragBox,pointerId:pointer.pointerId,startClientX:pointer.clientX,startClientY:pointer.clientY,startLeft:box.x,startTop:box.y,startWidth:box.width,startHeight:box.height}}
-function makeIframeDebug(){clearIframeDebug();document.querySelectorAll('iframe.cache-frame').forEach(frame=>{const label=document.createElement('div');const dragBox=document.createElement('div');label.className='iframe-debug-label';dragBox.className='iframe-drag-box';dragBox._pointers=new Map();dragBox.addEventListener('pointerdown',event=>{event.preventDefault();dragBox.setPointerCapture(event.pointerId);dragBox._pointers.set(event.pointerId,event);if(dragBox._pointers.size===1){startDrag(frame,label,dragBox,event)}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox)}});dragBox.addEventListener('pointermove',event=>{if(!dragBox._pointers.has(event.pointerId)){return}dragBox._pointers.set(event.pointerId,event);if(activePinch && activePinch.dragBox===dragBox && dragBox._pointers.size>=2){const points=twoPointers(dragBox);const currentDistance=distance(points[0],points[1]);const currentMid=midpoint(points[0],points[1]);const scaleChange=currentDistance/activePinch.startDistance;const nextScale=clamp(activePinch.startScale*scaleChange,.2,maxFrameScale(frame));const nextWidth=Math.round(frame.offsetWidth*nextScale);const nextHeight=Math.round(frame.offsetHeight*nextScale);const midDx=currentMid.x-activePinch.startMidX;const midDy=currentMid.y-activePinch.startMidY;const unclampedLeft=activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2;const unclampedTop=activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,nextWidth,nextHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';setFrameScale(frame,nextScale);placeIframeDebug(frame,label,dragBox);return}if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){const dx=event.clientX-activeDrag.startClientX;const dy=event.clientY-activeDrag.startClientY;const unclampedLeft=activeDrag.startLeft+dx;const unclampedTop=activeDrag.startTop+dy;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,activeDrag.startWidth,activeDrag.startHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';placeIframeDebug(frame,label,dragBox)}});function stopPointer(event){if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}try{dragBox.releasePointerCapture(event.pointerId)}catch(error){}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox);return}if(dragBox._pointers.size===1){const remaining=[...dragBox._pointers.values()][0];activePinch=null;startDrag(frame,label,dragBox,remaining);return}activeDrag=null;activePinch=null;document.body.classList.remove('dragging-iframe','resizing-iframe')}dragBox.addEventListener('pointerup',stopPointer);dragBox.addEventListener('pointercancel',stopPointer);dragBox.addEventListener('lostpointercapture',event=>{if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}});placeIframeDebug(frame,label,dragBox);frame.parentElement.appendChild(dragBox);frame.parentElement.appendChild(label)})}
-function buildGrid(){const grid=document.getElementById('gridOverlay');grid.innerHTML='';for(let x=0;x<=600;x+=100){const label=document.createElement('div');label.className='grid-number grid-x';label.textContent=x;label.style.left=x+'px';grid.appendChild(label)}for(let y=0;y<=900;y+=100){const label=document.createElement('div');label.className='grid-number grid-y';label.textContent=y;label.style.top=y+'px';grid.appendChild(label)}}
+function makeIframeDebug(){clearIframeDebug();visibleCacheFrames().forEach(frame=>{const label=document.createElement('div');const dragBox=document.createElement('div');label.className='iframe-debug-label';dragBox.className='iframe-drag-box';dragBox._pointers=new Map();dragBox.addEventListener('pointerdown',event=>{event.preventDefault();dragBox.setPointerCapture(event.pointerId);dragBox._pointers.set(event.pointerId,event);if(dragBox._pointers.size===1){startDrag(frame,label,dragBox,event)}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox)}});dragBox.addEventListener('pointermove',event=>{if(!dragBox._pointers.has(event.pointerId)){return}dragBox._pointers.set(event.pointerId,event);if(activePinch && activePinch.dragBox===dragBox && dragBox._pointers.size>=2){const points=twoPointers(dragBox);const currentDistance=distance(points[0],points[1]);const currentMid=midpoint(points[0],points[1]);const scaleChange=currentDistance/activePinch.startDistance;const nextScale=clamp(activePinch.startScale*scaleChange,.2,maxFrameScale(frame));const nextWidth=Math.round(frame.offsetWidth*nextScale);const nextHeight=Math.round(frame.offsetHeight*nextScale);const midDx=currentMid.x-activePinch.startMidX;const midDy=currentMid.y-activePinch.startMidY;const unclampedLeft=activePinch.startLeft+midDx-(nextWidth-activePinch.startVisualWidth)/2;const unclampedTop=activePinch.startTop+midDy-(nextHeight-activePinch.startVisualHeight)/2;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,nextWidth,nextHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';setFrameScale(frame,nextScale);placeIframeDebug(frame,label,dragBox);return}if(activeDrag && activeDrag.dragBox===dragBox && activeDrag.pointerId===event.pointerId){const dx=event.clientX-activeDrag.startClientX;const dy=event.clientY-activeDrag.startClientY;const unclampedLeft=activeDrag.startLeft+dx;const unclampedTop=activeDrag.startTop+dy;const clamped=clampPosition(frame,unclampedLeft,unclampedTop,activeDrag.startWidth,activeDrag.startHeight);frame.style.left=clamped.left+'px';frame.style.top=clamped.top+'px';placeIframeDebug(frame,label,dragBox)}});function stopPointer(event){if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}try{dragBox.releasePointerCapture(event.pointerId)}catch(error){}if(dragBox._pointers.size>=2){startPinch(frame,label,dragBox);return}if(dragBox._pointers.size===1){const remaining=[...dragBox._pointers.values()][0];activePinch=null;startDrag(frame,label,dragBox,remaining);return}activeDrag=null;activePinch=null;document.body.classList.remove('dragging-iframe','resizing-iframe')}dragBox.addEventListener('pointerup',stopPointer);dragBox.addEventListener('pointercancel',stopPointer);dragBox.addEventListener('lostpointercapture',event=>{if(dragBox._pointers.has(event.pointerId)){dragBox._pointers.delete(event.pointerId)}});placeIframeDebug(frame,label,dragBox);frame.parentElement.appendChild(dragBox);frame.parentElement.appendChild(label)})}
+function buildGrid(){const grid=document.getElementById('gridOverlay');grid.innerHTML='';for(let x=0;x<=600;x+=100){const label=document.createElement('div');label.className='grid-number grid-x';label.textContent=x;label.style.left=x+'px';grid.appendChild(label)}for(let y=0;y<=900;y+=100){const label=document.createElement('div');label.className='grid-number grid-y';label.textContent=y;grid.appendChild(label);label.style.top=y+'px'}}
 function toggleIframes(){document.body.classList.remove('live-mode');document.body.classList.toggle('show-iframes');if(document.body.classList.contains('show-iframes')){makeIframeDebug()}else{clearIframeDebug()}}
 function toggleLive(){document.body.classList.remove('show-iframes');clearIframeDebug();document.body.classList.toggle('live-mode')}
 function toggleGrid(){document.body.classList.toggle('show-grid');buildGrid()}
+function toggleButtons(){document.body.classList.toggle('show-buttons');refreshIframeDebug()}
+function toggleFrames(){document.body.classList.toggle('show-frames');refreshIframeDebug()}
 window.addEventListener('resize',()=>{if(document.body.classList.contains('show-iframes')){makeIframeDebug()}});
 buildGrid();
 </script>
