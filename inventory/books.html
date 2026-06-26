@@ -1,5 +1,3 @@
-Inventory books
-
 <!doctype html>
 <html>
 <head>
@@ -21,7 +19,7 @@ body{
 .inventory-books{
   position:relative;
   width:430px;
-  height:220px;
+  height:245px;
   border:0;
   background:transparent;
   cursor:pointer;
@@ -31,7 +29,7 @@ body{
   position:absolute;
   left:20px;
   right:20px;
-  bottom:20px;
+  bottom:38px;
   height:18px;
   border:3px solid #1b0c05;
   border-radius:6px;
@@ -41,11 +39,33 @@ body{
     inset 0 3px 0 rgba(255,255,255,.12);
 }
 
+.title-plate{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:255px;
+  height:38px;
+  border:4px solid #1f0d06;
+  border-radius:10px;
+  background:linear-gradient(#d2a84d,#7b5519);
+  color:#1b0c05;
+  display:grid;
+  place-items:center;
+  font-size:15px;
+  font-weight:950;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  box-shadow:
+    0 8px 16px rgba(0,0,0,.5),
+    inset 0 3px 0 rgba(255,255,255,.25);
+}
+
 .books{
   position:absolute;
   left:28px;
   right:28px;
-  bottom:38px;
+  bottom:56px;
   height:160px;
   display:flex;
   align-items:flex-end;
@@ -57,9 +77,12 @@ body{
   position:relative;
   width:40px;
   height:150px;
+  border:0;
   border-radius:8px 8px 5px 5px;
   overflow:hidden;
   color:#f7ebc4;
+  padding:0;
+  cursor:pointer;
   background:
     linear-gradient(90deg,
       rgba(0,0,0,.42),
@@ -99,6 +122,7 @@ body{
     0 3px 0 #190904,
     0 0 8px rgba(255,222,140,.38);
   z-index:3;
+  pointer-events:none;
 }
 
 .book:nth-child(1){height:146px;--tilt:-2deg;--cover:linear-gradient(#7b2d18,#3b160c)}
@@ -112,21 +136,45 @@ body{
 .book:nth-child(9){height:148px;--tilt:-1deg;--cover:linear-gradient(#7d331d,#3b160c)}
 </style>
 </head>
+
 <body>
-<button class="inventory-books">
+
+<div class="inventory-books">
   <span class="books">
-    <span class="book"><span class="letter">I</span></span>
-    <span class="book"><span class="letter">N</span></span>
-    <span class="book"><span class="letter">V</span></span>
-    <span class="book"><span class="letter">E</span></span>
-    <span class="book"><span class="letter">N</span></span>
-    <span class="book"><span class="letter">T</span></span>
-    <span class="book"><span class="letter">O</span></span>
-    <span class="book"><span class="letter">R</span></span>
-    <span class="book"><span class="letter">Y</span></span>
+    <button class="book" type="button" data-label="red book" data-cover="linear-gradient(#7b2d18,#3b160c)"><span class="letter">I</span></button>
+    <button class="book" type="button" data-label="green book" data-cover="linear-gradient(#244f38,#102719)"><span class="letter">N</span></button>
+    <button class="book" type="button" data-label="brown book" data-cover="linear-gradient(#5b2615,#2e1008)"><span class="letter">V</span></button>
+    <button class="book" type="button" data-label="blue book" data-cover="linear-gradient(#253f69,#111d34)"><span class="letter">E</span></button>
+    <button class="book" type="button" data-label="gold book" data-cover="linear-gradient(#7a5a20,#35250b)"><span class="letter">N</span></button>
+    <button class="book" type="button" data-label="rust book" data-cover="linear-gradient(#6f2615,#2f1008)"><span class="letter">T</span></button>
+    <button class="book" type="button" data-label="purple book" data-cover="linear-gradient(#3e315f,#1b132c)"><span class="letter">O</span></button>
+    <button class="book" type="button" data-label="teal book" data-cover="linear-gradient(#17484f,#082428)"><span class="letter">R</span></button>
+    <button class="book" type="button" data-label="orange book" data-cover="linear-gradient(#7d331d,#3b160c)"><span class="letter">Y</span></button>
   </span>
 
   <span class="shelf"></span>
-</button>
+  <span class="title-plate" id="titlePlate">inventory story</span>
+</div>
+
+<script>
+const books=document.querySelectorAll(".book");
+const titlePlate=document.getElementById("titlePlate");
+
+books.forEach(book=>{
+  book.addEventListener("click",event=>{
+    event.stopPropagation();
+
+    const cover=book.dataset.cover;
+    const label=book.dataset.label;
+
+    books.forEach(otherBook=>{
+      otherBook.style.setProperty("--cover",cover);
+    });
+
+    titlePlate.textContent=label;
+  });
+});
+</script>
+
 </body>
 </html>
