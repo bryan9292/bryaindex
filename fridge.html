@@ -1,1 +1,484 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="format-detection" content="telephone=no"><title>Fridge</title><style>*{box-sizing:border-box}html,body{margin:0;padding:0;width:230px;height:450px;background:transparent;overflow:visible}body{position:relative;font-family:system-ui,sans-serif}.fridge{position:absolute;left:10px;top:10px;width:210px;height:430px;background:linear-gradient(90deg,rgba(255,255,255,.35),transparent 28%,rgba(0,0,0,.08)),#e9edf0;border:5px solid #b9c0c5;border-radius:18px 18px 10px 10px;box-shadow:inset -14px 0 24px rgba(0,0,0,.12),0 28px 55px rgba(0,0,0,.6);overflow:hidden}.freezer-line{position:absolute;left:0;right:0;top:96px;height:5px;background:#b9c0c5;box-shadow:0 2px 4px rgba(0,0,0,.12)}.handle{position:absolute;left:18px;top:132px;width:16px;height:145px;border-radius:999px;background:linear-gradient(90deg,#d7dde1,#f9fbfc,#aeb6bd);box-shadow:inset 3px 0 5px rgba(255,255,255,.7),4px 4px 10px rgba(0,0,0,.18)}.handle.freezer{top:28px;height:46px}.paper{position:absolute;background:#fffdf4;border:2px solid #eee1bf;box-shadow:0 6px 12px rgba(0,0,0,.18)}.paper.one{width:82px;height:72px;right:22px;top:132px;transform:rotate(4deg)}.paper.two{width:92px;height:82px;left:56px;bottom:58px;transform:rotate(-5deg)}.magnet{position:absolute;width:18px;height:18px;border-radius:50%;box-shadow:inset 2px 2px 4px rgba(255,255,255,.55),0 3px 5px rgba(0,0,0,.25);z-index:5}.red{background:#e84848}.green{background:#3fc46b}.m1{right:52px;top:123px}.m3{left:82px;bottom:132px}.sun{position:absolute;right:9px;top:8px;width:20px;height:20px;background:#ffd84a;border-radius:50%}.hill{position:absolute;left:0;right:0;bottom:0;height:26px;background:#76c46f;border-radius:50% 50% 0 0}.house{position:absolute;left:20px;bottom:22px;width:32px;height:25px;background:#f05b5b}.house:before{content:"";position:absolute;left:-5px;top:-18px;border-left:21px solid transparent;border-right:21px solid transparent;border-bottom:20px solid #7a4a2a}.stick{position:absolute;left:28px;bottom:18px;width:4px;height:30px;background:#6b3b1d}.face{position:absolute;left:20px;bottom:47px;width:20px;height:20px;background:#ffc08a;border-radius:50%}.line{position:absolute;background:#6b3b1d}.arm{width:28px;height:4px;top:27px}.arm.left{right:2px;transform:rotate(-28deg)}.arm.right{left:2px;transform:rotate(28deg)}.foot{width:4px;height:24px;bottom:-18px;background:#3355aa}.foot.left{left:4px;transform:rotate(20deg)}.foot.right{right:4px;transform:rotate(-20deg)}.rainbow{position:absolute;left:12px;bottom:16px;width:58px;height:34px;border-radius:60px 60px 0 0;border-top:6px solid #e84848;border-left:6px solid #e84848;border-right:6px solid #e84848}.rainbow:before{content:"";position:absolute;left:5px;top:5px;width:36px;height:21px;border-radius:40px 40px 0 0;border-top:6px solid #ffd84a;border-left:6px solid #ffd84a;border-right:6px solid #ffd84a}.rainbow:after{content:"";position:absolute;left:15px;top:14px;width:17px;height:10px;border-radius:30px 30px 0 0;border-top:6px solid #3c7cff;border-left:6px solid #3c7cff;border-right:6px solid #3c7cff}.note{position:absolute;right:18px;bottom:155px;width:48px;height:32px;background:#fff7b8;transform:rotate(7deg);border:2px solid #ebd86b;box-shadow:0 4px 8px rgba(0,0,0,.15)}.note:after{content:"A+";position:absolute;inset:0;display:grid;place-items:center;color:#e84848;font-weight:900;font-size:17px}.shadow{position:absolute;bottom:-35px;left:50%;width:190px;height:28px;transform:translateX(-50%);background:rgba(0,0,0,.5);filter:blur(9px);border-radius:50%}</style></head><body><div class="fridge"><div class="freezer-line"></div><div class="handle freezer"></div><div class="handle"></div><div class="paper one"><div class="sun"></div><div class="house"></div><div class="hill"></div></div><div class="paper two"><div class="rainbow"></div><div class="stick"><div class="face"></div><div class="line arm left"></div><div class="line arm right"></div><div class="line foot left"></div><div class="line foot right"></div></div></div><div class="note"></div><div class="magnet red m1"></div><div class="magnet green m3"></div><div class="shadow"></div></div></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="format-detection" content="telephone=no">
+<title>Fridge Opening Logic</title>
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:230px;
+  height:450px;
+  background:transparent;
+  overflow:visible;
+}
+
+body{
+  position:relative;
+  font-family:system-ui,sans-serif;
+  perspective:900px;
+}
+
+.fridge-wrap{
+  position:absolute;
+  left:10px;
+  top:10px;
+  width:210px;
+  height:430px;
+}
+
+.fridge{
+  position:absolute;
+  inset:0;
+  border:5px solid #b9c0c5;
+  border-radius:18px 18px 10px 10px;
+  background:#d7dde1;
+  box-shadow:
+    inset -14px 0 24px rgba(0,0,0,.12),
+    0 28px 55px rgba(0,0,0,.6);
+  overflow:visible;
+}
+
+.inside{
+  position:absolute;
+  left:0;
+  width:100%;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.12),transparent 35%),
+    #22282c;
+  border:2px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.65);
+}
+
+.freezer-inside{
+  top:0;
+  height:96px;
+  border-radius:12px 12px 0 0;
+}
+
+.fridge-inside{
+  top:101px;
+  bottom:0;
+  border-radius:0 0 7px 7px;
+}
+
+.shelf{
+  position:absolute;
+  left:18px;
+  right:18px;
+  height:3px;
+  background:rgba(255,255,255,.35);
+  box-shadow:0 0 10px rgba(255,255,255,.16);
+}
+
+.freezer-inside .shelf{top:48px}
+.fridge-inside .shelf.one{top:86px}
+.fridge-inside .shelf.two{top:178px}
+
+.door{
+  position:absolute;
+  left:0;
+  width:100%;
+  transform-origin:right center;
+  transform-style:preserve-3d;
+  transition:box-shadow .18s ease;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.35),transparent 28%,rgba(0,0,0,.08)),
+    #e9edf0;
+  border-left:0;
+  border-right:0;
+  z-index:3;
+  pointer-events:none;
+}
+
+.freezer-door{
+  top:0;
+  height:96px;
+  border-radius:13px 13px 0 0;
+  border-bottom:5px solid #b9c0c5;
+}
+
+.fridge-door{
+  top:101px;
+  bottom:0;
+  border-radius:0 0 5px 5px;
+}
+
+.freezer-door,
+.fridge-door{
+  transform:rotateY(var(--open-angle,0deg));
+}
+
+.drag-zone{
+  position:absolute;
+  left:0;
+  width:100%;
+  z-index:30;
+  background:transparent;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  cursor:grab;
+}
+
+.drag-zone:active{
+  cursor:grabbing;
+}
+
+.freezer-drag{
+  top:0;
+  height:96px;
+}
+
+.fridge-drag{
+  top:101px;
+  bottom:0;
+}
+
+.handle{
+  position:absolute;
+  left:18px;
+  width:16px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d7dde1,#f9fbfc,#aeb6bd);
+  box-shadow:
+    inset 3px 0 5px rgba(255,255,255,.7),
+    4px 4px 10px rgba(0,0,0,.18);
+  z-index:7;
+  pointer-events:none;
+}
+
+.handle.freezer{
+  top:28px;
+  height:46px;
+}
+
+.handle.fridge{
+  top:31px;
+  height:145px;
+}
+
+.paper{
+  position:absolute;
+  background:#fffdf4;
+  border:2px solid #eee1bf;
+  box-shadow:0 6px 12px rgba(0,0,0,.18);
+  z-index:6;
+  pointer-events:none;
+}
+
+.paper.one{
+  width:82px;
+  height:72px;
+  right:22px;
+  top:31px;
+  transform:rotate(4deg);
+}
+
+.paper.two{
+  width:92px;
+  height:82px;
+  left:56px;
+  bottom:58px;
+  transform:rotate(-5deg);
+}
+
+.magnet{
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,.55),
+    0 3px 5px rgba(0,0,0,.25);
+  z-index:8;
+  pointer-events:none;
+}
+
+.red{background:#e84848}
+.green{background:#3fc46b}
+.m1{right:52px;top:22px}
+.m3{left:82px;bottom:132px}
+
+.sun{
+  position:absolute;
+  right:9px;
+  top:8px;
+  width:20px;
+  height:20px;
+  background:#ffd84a;
+  border-radius:50%;
+}
+
+.hill{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:26px;
+  background:#76c46f;
+  border-radius:50% 50% 0 0;
+}
+
+.house{
+  position:absolute;
+  left:20px;
+  bottom:22px;
+  width:32px;
+  height:25px;
+  background:#f05b5b;
+}
+
+.house:before{
+  content:"";
+  position:absolute;
+  left:-5px;
+  top:-18px;
+  border-left:21px solid transparent;
+  border-right:21px solid transparent;
+  border-bottom:20px solid #7a4a2a;
+}
+
+.stick{
+  position:absolute;
+  left:28px;
+  bottom:18px;
+  width:4px;
+  height:30px;
+  background:#6b3b1d;
+}
+
+.face{
+  position:absolute;
+  left:20px;
+  bottom:47px;
+  width:20px;
+  height:20px;
+  background:#ffc08a;
+  border-radius:50%;
+}
+
+.line{position:absolute;background:#6b3b1d}
+.arm{width:28px;height:4px;top:27px}
+.arm.left{right:2px;transform:rotate(-28deg)}
+.arm.right{left:2px;transform:rotate(28deg)}
+.foot{width:4px;height:24px;bottom:-18px;background:#3355aa}
+.foot.left{left:4px;transform:rotate(20deg)}
+.foot.right{right:4px;transform:rotate(-20deg)}
+
+.rainbow{
+  position:absolute;
+  left:12px;
+  bottom:16px;
+  width:58px;
+  height:34px;
+  border-radius:60px 60px 0 0;
+  border-top:6px solid #e84848;
+  border-left:6px solid #e84848;
+  border-right:6px solid #e84848;
+}
+
+.rainbow:before{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:5px;
+  width:36px;
+  height:21px;
+  border-radius:40px 40px 0 0;
+  border-top:6px solid #ffd84a;
+  border-left:6px solid #ffd84a;
+  border-right:6px solid #ffd84a;
+}
+
+.rainbow:after{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:14px;
+  width:17px;
+  height:10px;
+  border-radius:30px 30px 0 0;
+  border-top:6px solid #3c7cff;
+  border-left:6px solid #3c7cff;
+  border-right:6px solid #3c7cff;
+}
+
+.note{
+  position:absolute;
+  right:18px;
+  bottom:155px;
+  width:48px;
+  height:32px;
+  background:#fff7b8;
+  transform:rotate(7deg);
+  border:2px solid #ebd86b;
+  box-shadow:0 4px 8px rgba(0,0,0,.15);
+  z-index:7;
+  pointer-events:none;
+}
+
+.note:after{
+  content:"A+";
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:#e84848;
+  font-weight:900;
+  font-size:17px;
+}
+
+.shadow{
+  position:absolute;
+  bottom:-35px;
+  left:50%;
+  width:190px;
+  height:28px;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.5);
+  filter:blur(9px);
+  border-radius:50%;
+  z-index:-1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="fridge-wrap" id="fridgeWrap">
+  <div class="fridge">
+
+    <div class="inside freezer-inside">
+      <div class="shelf"></div>
+    </div>
+
+    <div class="inside fridge-inside">
+      <div class="shelf one"></div>
+      <div class="shelf two"></div>
+    </div>
+
+    <div class="door freezer-door" id="freezerDoor">
+      <div class="handle freezer"></div>
+      <div class="paper one">
+        <div class="sun"></div>
+        <div class="house"></div>
+        <div class="hill"></div>
+      </div>
+      <div class="magnet red m1"></div>
+    </div>
+
+    <div class="door fridge-door" id="fridgeDoor">
+      <div class="handle fridge"></div>
+
+      <div class="paper two">
+        <div class="rainbow"></div>
+        <div class="stick">
+          <div class="face"></div>
+          <div class="line arm left"></div>
+          <div class="line arm right"></div>
+          <div class="line foot left"></div>
+          <div class="line foot right"></div>
+        </div>
+      </div>
+
+      <div class="note"></div>
+      <div class="magnet green m3"></div>
+    </div>
+
+    <div class="drag-zone freezer-drag" id="freezerDrag"></div>
+    <div class="drag-zone fridge-drag" id="fridgeDrag"></div>
+
+    <div class="shadow"></div>
+  </div>
+</div>
+
+<script>
+function clamp(value,min,max){
+  return Math.max(min,Math.min(max,value));
+}
+
+function makeDraggableFridgeDoor(dragId,doorId,maxAngle){
+  const dragger=document.getElementById(dragId);
+  const door=document.getElementById(doorId);
+
+  let amount=0;
+  let startX=0;
+  let startAmount=0;
+  let dragging=false;
+
+  function render(){
+    const angle=amount*maxAngle;
+    const shadowPull=amount*18;
+
+    door.style.setProperty("--open-angle",angle+"deg");
+    door.style.boxShadow=
+      `inset -14px 0 24px rgba(0,0,0,.12),
+       ${-6-shadowPull}px 12px 22px rgba(0,0,0,.45)`;
+  }
+
+  function begin(clientX){
+    dragging=true;
+    startX=clientX;
+    startAmount=amount;
+  }
+
+  function move(clientX){
+    if(!dragging){
+      return;
+    }
+
+    const dx=clientX-startX;
+    amount=clamp(startAmount + dx/90,0,1);
+    render();
+  }
+
+  function end(){
+    dragging=false;
+  }
+
+  dragger.addEventListener("touchstart",event=>{
+    if(event.touches.length!==1){
+      return;
+    }
+
+    event.preventDefault();
+    begin(event.touches[0].clientX);
+  },{passive:false});
+
+  dragger.addEventListener("touchmove",event=>{
+    if(event.touches.length!==1){
+      return;
+    }
+
+    event.preventDefault();
+    move(event.touches[0].clientX);
+  },{passive:false});
+
+  dragger.addEventListener("touchend",end);
+  dragger.addEventListener("touchcancel",end);
+
+  dragger.addEventListener("mousedown",event=>{
+    event.preventDefault();
+    begin(event.clientX);
+  });
+
+  window.addEventListener("mousemove",event=>{
+    move(event.clientX);
+  });
+
+  window.addEventListener("mouseup",end);
+
+  render();
+}
+
+makeDraggableFridgeDoor("freezerDrag","freezerDoor",72);
+makeDraggableFridgeDoor("fridgeDrag","fridgeDoor",78);
+</script>
+
+</body>
+</html>
