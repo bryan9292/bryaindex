@@ -10,7 +10,7 @@
 html,body{
   margin:0;
   padding:0;
-  width:230px;
+  width:360px;
   height:450px;
   background:transparent;
   overflow:visible;
@@ -24,7 +24,7 @@ body{
 
 .fridge-wrap{
   position:absolute;
-  left:10px;
+  left:118px;
   top:10px;
   width:210px;
   height:430px;
@@ -65,6 +65,22 @@ body{
   border-radius:0 0 7px 7px;
 }
 
+.fridge-inside.ready{
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.65),
+    inset 0 0 22px rgba(145,230,255,.65);
+}
+
+.fridge-inside.accept{
+  animation:acceptPulse .38s ease;
+}
+
+@keyframes acceptPulse{
+  0%{filter:brightness(1)}
+  45%{filter:brightness(1.55)}
+  100%{filter:brightness(1)}
+}
+
 .shelf{
   position:absolute;
   left:18px;
@@ -77,6 +93,18 @@ body{
 .freezer-inside .shelf{top:48px}
 .fridge-inside .shelf.one{top:86px}
 .fridge-inside .shelf.two{top:178px}
+
+.stored-cubes{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  min-height:48px;
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  z-index:2;
+}
 
 .door{
   position:absolute;
@@ -333,6 +361,81 @@ body{
   font-size:17px;
 }
 
+.cube-rack{
+  position:absolute;
+  left:12px;
+  top:142px;
+  width:72px;
+  display:grid;
+  gap:14px;
+  z-index:80;
+}
+
+.cube{
+  width:42px;
+  height:42px;
+  border:3px solid #111;
+  border-radius:9px;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:
+    inset 6px 6px 0 rgba(255,255,255,.32),
+    inset -7px -7px 0 rgba(0,0,0,.16),
+    0 8px 10px rgba(0,0,0,.28);
+  transition:
+    left .42s cubic-bezier(.2,.9,.2,1),
+    top .42s cubic-bezier(.2,.9,.2,1),
+    transform .42s cubic-bezier(.2,.9,.2,1),
+    opacity .28s ease,
+    filter .28s ease;
+}
+
+.cube:active{
+  cursor:grabbing;
+}
+
+.cube.blue{background:#69cfff}
+.cube.yellow{background:#ffe16a}
+.cube.redcube{background:#ff7b65}
+
+.cube.dragging{
+  position:fixed;
+  z-index:999;
+  pointer-events:none;
+  transform:scale(1.08) rotate(4deg);
+  transition:none;
+}
+
+.cube.accepting{
+  position:fixed;
+  z-index:999;
+  pointer-events:none;
+  transform:scale(.58) rotate(-13deg);
+  opacity:.55;
+  filter:saturate(.75) brightness(1.25);
+}
+
+.cube.stored{
+  position:relative;
+  left:auto!important;
+  top:auto!important;
+  width:34px;
+  height:34px;
+  border-width:2px;
+  border-radius:8px;
+  cursor:default;
+  transform:none;
+  opacity:1;
+  filter:none;
+  box-shadow:
+    inset 5px 5px 0 rgba(255,255,255,.25),
+    inset -5px -5px 0 rgba(0,0,0,.2),
+    0 4px 8px rgba(0,0,0,.35);
+}
+
 .shadow{
   position:absolute;
   bottom:-35px;
@@ -350,6 +453,12 @@ body{
 
 <body>
 
+<div class="cube-rack" id="cubeRack">
+  <div class="cube blue" data-cube="blue"></div>
+  <div class="cube yellow" data-cube="yellow"></div>
+  <div class="cube redcube" data-cube="red"></div>
+</div>
+
 <div class="fridge-wrap" id="fridgeWrap">
   <div class="fridge">
 
@@ -357,9 +466,10 @@ body{
       <div class="shelf"></div>
     </div>
 
-    <div class="inside fridge-inside">
+    <div class="inside fridge-inside" id="fridgeInside">
       <div class="shelf one"></div>
       <div class="shelf two"></div>
+      <div class="stored-cubes" id="storedCubes"></div>
     </div>
 
     <div class="door freezer-door" id="freezerDoor">
@@ -415,6 +525,7 @@ function makeDraggableFridgeDoor(dragId,doorId,maxAngle){
     const angle=amount*maxAngle;
     const shadowPull=amount*18;
 
+    door.dataset.openAmount=amount;
     door.style.setProperty("--open-angle",angle+"deg");
     door.style.boxShadow=
       `inset -14px 0 24px rgba(0,0,0,.12),
@@ -476,8 +587,158 @@ function makeDraggableFridgeDoor(dragId,doorId,maxAngle){
   render();
 }
 
+function makeCubeStorage(){
+  const fridgeDoor=document.getElementById("fridgeDoor");
+  const fridgeInside=document.getElementById("fridgeInside");
+  const storedCubes=document.getElementById("storedCubes");
+
+  document.querySelectorAll(".cube").forEach(cube=>{
+    const home={left:0,top:0};
+    let dragging=false;
+    let shiftX=0;
+    let shiftY=0;
+
+    function rememberHome(){
+      const rect=cube.getBoundingClientRect();
+      home.left=rect.left;
+      home.top=rect.top;
+    }
+
+    function begin(clientX,clientY){
+      if(cube.classList.contains("stored")){
+        return;
+      }
+
+      rememberHome();
+      const rect=cube.getBoundingClientRect();
+      shiftX=clientX-rect.left;
+      shiftY=clientY-rect.top;
+      dragging=true;
+
+      cube.classList.add("dragging");
+      cube.style.left=rect.left+"px";
+      cube.style.top=rect.top+"px";
+    }
+
+    function move(clientX,clientY){
+      if(!dragging){
+        return;
+      }
+
+      cube.style.left=(clientX-shiftX)+"px";
+      cube.style.top=(clientY-shiftY)+"px";
+
+      if(canAccept(clientX,clientY)){
+        fridgeInside.classList.add("ready");
+      }else{
+        fridgeInside.classList.remove("ready");
+      }
+    }
+
+    function canAccept(clientX,clientY){
+      const openAmount=parseFloat(fridgeDoor.dataset.openAmount || "0");
+      const rect=fridgeInside.getBoundingClientRect();
+
+      return openAmount>.42 &&
+        clientX>rect.left+8 &&
+        clientX<rect.right-8 &&
+        clientY>rect.top+8 &&
+        clientY<rect.bottom-8;
+    }
+
+    function accept(clientX,clientY){
+      const insideRect=fridgeInside.getBoundingClientRect();
+      const targetLeft=insideRect.left+insideRect.width*.5-17;
+      const targetTop=insideRect.bottom-62;
+
+      fridgeInside.classList.remove("ready");
+      fridgeInside.classList.add("accept");
+      cube.classList.remove("dragging");
+      cube.classList.add("accepting");
+      cube.style.left=targetLeft+"px";
+      cube.style.top=targetTop+"px";
+
+      setTimeout(()=>{
+        fridgeInside.classList.remove("accept");
+        cube.classList.remove("accepting");
+        cube.classList.add("stored");
+        cube.style.left="";
+        cube.style.top="";
+        storedCubes.appendChild(cube);
+      },430);
+    }
+
+    function snapBack(){
+      fridgeInside.classList.remove("ready");
+      cube.classList.remove("dragging");
+      cube.style.left=home.left+"px";
+      cube.style.top=home.top+"px";
+
+      setTimeout(()=>{
+        cube.style.left="";
+        cube.style.top="";
+      },430);
+    }
+
+    function end(clientX,clientY){
+      if(!dragging){
+        return;
+      }
+
+      dragging=false;
+
+      if(canAccept(clientX,clientY)){
+        accept(clientX,clientY);
+      }else{
+        snapBack();
+      }
+    }
+
+    cube.addEventListener("touchstart",event=>{
+      if(event.touches.length!==1){
+        return;
+      }
+
+      event.preventDefault();
+      begin(event.touches[0].clientX,event.touches[0].clientY);
+    },{passive:false});
+
+    window.addEventListener("touchmove",event=>{
+      if(!dragging || event.touches.length!==1){
+        return;
+      }
+
+      event.preventDefault();
+      move(event.touches[0].clientX,event.touches[0].clientY);
+    },{passive:false});
+
+    window.addEventListener("touchend",event=>{
+      const touch=event.changedTouches[0];
+      if(!touch){
+        return;
+      }
+
+      end(touch.clientX,touch.clientY);
+    });
+
+    cube.addEventListener("mousedown",event=>{
+      event.preventDefault();
+      begin(event.clientX,event.clientY);
+    });
+
+    window.addEventListener("mousemove",event=>{
+      move(event.clientX,event.clientY);
+    });
+
+    window.addEventListener("mouseup",event=>{
+      end(event.clientX,event.clientY);
+    });
+  });
+}
+
 makeDraggableFridgeDoor("freezerDrag","freezerDoor",72);
 makeDraggableFridgeDoor("fridgeDrag","fridgeDoor",78);
+makeCubeStorage();
 </script>
 
 </body>
