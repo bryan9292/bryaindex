@@ -39,6 +39,7 @@ body.bill-sale-open .bill-sale-pop{display:grid}
 .bill-sale-frame{width:100%;height:100%;border:0;background:#111;display:block}
 .bill-sale-close{position:absolute;right:10px;top:10px;width:32px;height:32px;border:1px solid rgba(245,210,122,.75);border-radius:50%;background:#070707;color:#f5d27a;font-size:20px;font-weight:900;line-height:1;z-index:2;cursor:pointer;box-shadow:0 0 15px rgba(0,0,0,.85)}
 .bill-sale-toggle{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:150px;height:46px;border:2px solid #2a1708;border-radius:12px;background:linear-gradient(#d5ad54,#7a5118);color:#160b04;font-size:12px;font-weight:950;letter-spacing:.12em;text-transform:uppercase;line-height:1.1;z-index:91;box-shadow:0 12px 26px rgba(0,0,0,.65),inset 0 2px 0 rgba(255,255,255,.25);cursor:pointer}
+.stylize-frame{position:fixed;left:calc(50% + 92px);bottom:10px;width:210px;height:62px;border:0;background:transparent;display:block;overflow:visible;z-index:91}
 .utility-button{position:fixed;left:18px;width:78px;height:36px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:#090909;color:#fff;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;z-index:90}
 .iframe-toggle{top:calc(50vh - 44px)}
 .live-toggle{top:50vh}
@@ -71,6 +72,7 @@ body.show-grid .grid-overlay{display:block}
 <button class="utility-button buttons-toggle" type="button" onclick="toggleButtons()">buttons</button>
 <button class="utility-button frames-toggle" type="button" onclick="toggleFrames()">frames</button>
 <button class="bill-sale-toggle" type="button" onclick="openBillSale()">Bill of<br>Sale</button>
+<iframe class="stylize-frame" src="buttons/stylize.html" title="Stylize Button" allowtransparency="true"></iframe>
 <div class="bryaindex-box">
   <div class="board-size-label board-width-label">600 W</div>
   <div class="board-size-label board-height-label">900 H</div>
